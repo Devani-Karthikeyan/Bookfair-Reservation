@@ -1,5 +1,6 @@
 package com.project.Bookfair_Reservation.entity;
 
+import com.project.Bookfair_Reservation.enumtype.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,6 +27,7 @@ public class Reservation {
 
     // When reservation was made
     @Column(name = "reservation_date", nullable = false)
+    @Builder.Default
     private LocalDateTime reservationDate = LocalDateTime.now();
 
     // Unique QR code for entry
@@ -35,6 +37,11 @@ public class Reservation {
     // Link to reserved stalls (max 3)
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
     private List<ReservationStall> reservationStalls;
+
+    // Status of reservation
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private ReservationStatus status = ReservationStatus.RESERVED;
+
 }
-
-
