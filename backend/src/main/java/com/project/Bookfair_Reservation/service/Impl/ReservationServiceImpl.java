@@ -1,12 +1,15 @@
 package com.project.Bookfair_Reservation.service.Impl;
 
-import com.project.Bookfair_Reservation.dto.reservation.ReservationRequestDTO;
-import com.project.Bookfair_Reservation.dto.reservation.ReservationResponseDTO;
+import com.project.Bookfair_Reservation.dto.request.ReservationRequestDTO;
+import com.project.Bookfair_Reservation.dto.result.ReservationResultDTO;
 import com.project.Bookfair_Reservation.entity.Reservation;
 import com.project.Bookfair_Reservation.entity.ReservationStall;
 import com.project.Bookfair_Reservation.entity.Stall;
 import com.project.Bookfair_Reservation.entity.User;
 import com.project.Bookfair_Reservation.enumtype.ReservationStatus;
+import com.project.Bookfair_Reservation.exception.BadRequestException;
+import com.project.Bookfair_Reservation.exception.ResourceNotFoundException;
+import com.project.Bookfair_Reservation.exception.UnauthorizedActionException;
 import com.project.Bookfair_Reservation.repository.ReservationRepository;
 import com.project.Bookfair_Reservation.repository.StallRepository;
 import com.project.Bookfair_Reservation.repository.UserAuthRepository;
@@ -16,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,35 +36,39 @@ public class ReservationServiceImpl implements ReservationService {
     @Autowired
     private StallRepository stallRepository;
 
+    //Create Reservation
     @Override
-    public ReservationResponseDTO createReservation(ReservationRequestDTO requestDTO) {
+    public ReservationResultDTO createReservation(ReservationRequestDTO requestDTO) {
 
-        // Validate request size (1 or 2 stalls)
-        if (requestDTO.getStallIds() == null ||
-                requestDTO.getStallIds().isEmpty() ||
-                requestDTO.getStallIds().size() > 2) {
-            throw new RuntimeException("You can reserve only 1 or 2 stalls at a time.");
+        // Validate stall count (max 3 at once)
+        if (requestDTO.getStallId() == null ||
+                requestDTO.getStallId().isEmpty() ||
+                requestDTO.getStallId().size() > 3) {
+            throw new BadRequestException("You can reserve maximum 3 stalls at a time.");
         }
 
         // Get user
         User user = userRepository.findById(requestDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        // Count already reserved stalls (except cancelled)
-        int totalReserved =
-                reservationRepository.countByUser_IdAndStatusNot(user.getId(), ReservationStatus.CANCELLED);
+        // Count active reservations  (ignore cancelled & expired)
+        int activeReservations =
+                reservationRepository.countByUser_IdAndStatusNotIn(user.getId(), Arrays.asList(
+                        ReservationStatus.CANCELLED,
+                        ReservationStatus.EXPIRED
+                ));
 
-        if (totalReserved + requestDTO.getStallIds().size() > 3) {
-            throw new RuntimeException("Maximum total 3 stalls allowed per user.");
+        if (activeReservations + requestDTO.getStallId().size() > 3) {
+            throw new BadRequestException("Maximum total 3 stalls allowed per user.");
         }
 
         // Prevent double booking
-        for (Long stallId : requestDTO.getStallIds()) {
+        for (Long stallId : requestDTO.getStallId()) {
             boolean alreadyBooked = reservationRepository
                     .existsByReservationStalls_StallIdAndStatusNot(stallId, ReservationStatus.CANCELLED);
 
             if (alreadyBooked) {
-                throw new RuntimeException("Stall ID " + stallId + " already reserved.");
+                throw new BadRequestException("Stall ID " + stallId + " already reserved.");
             }
         }
 
@@ -68,15 +76,16 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = Reservation.builder()
                 .user(user)
                 .qrCode(UUID.randomUUID().toString())
+                .status(ReservationStatus.PENDING_PAYMENT)
                 .build();
 
         reservation = reservationRepository.save(reservation);
 
         // Create reservation-stall mapping
         List<ReservationStall> reservationStalls = new ArrayList<>();
-        for (Long stallId : requestDTO.getStallIds()) {
+        for (Long stallId : requestDTO.getStallId()) {
             Stall stall = stallRepository.findById(stallId)
-                    .orElseThrow(() -> new RuntimeException("Stall not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Stall not found"));
 
             ReservationStall rs = ReservationStall.builder()
                     .reservation(reservation)
@@ -89,26 +98,57 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setReservationStalls(reservationStalls);
         reservationRepository.save(reservation);
 
-        return new ReservationResponseDTO(reservation.getId(), "Reservation successful");
+        return new ReservationResultDTO(reservation.getId(), "Reservation successful");
     }
 
+    // User can see only his Reservations
     @Override
-    public List<ReservationResponseDTO> getReservationsByUser(Long userId) {
+    public List<ReservationResultDTO> getReservationsByUser(Long userId) {
         List<Reservation> reservations = reservationRepository.findByUser_Id(userId);
-        List<ReservationResponseDTO> response = new ArrayList<>();
+        List<ReservationResultDTO> response = new ArrayList<>();
         for (Reservation r : reservations) {
-            response.add(new ReservationResponseDTO(r.getId(), "Reservation found"));
+            response.add(new ReservationResultDTO(r.getId(), "Status: " + r.getStatus() ));
         }
         return response;
     }
 
+    // Employee and Admin view all
     @Override
-    public List<ReservationResponseDTO> getAllReservations() {
+    public List<ReservationResultDTO> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
-        List<ReservationResponseDTO> response = new ArrayList<>();
+        List<ReservationResultDTO> response = new ArrayList<>();
         for (Reservation r : reservations) {
-            response.add(new ReservationResponseDTO(r.getId(), "Reservation found"));
+            response.add(new ReservationResultDTO(r.getId(), "User ID: " + r.getUser().getId() + "| Status: " + r.getStatus() ));
         }
         return response;
+    }
+
+    // Cancel Reservation
+    @Override
+    public ReservationResultDTO cancelReservation(
+            Long reservationId,
+            Long userId,
+            String role
+    ) {
+
+        Reservation reservation =
+                reservationRepository.findById(reservationId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
+
+        // USER can cancel only his reservation
+        if (role.equals("PUBLISHER") || role.equals("VENDOR")) {
+            if (!reservation.getUser().getId().equals(userId)) {
+                throw new UnauthorizedActionException("You can cancel only your reservation.");
+            }
+        }
+
+        reservation.setStatus(ReservationStatus.CANCELLED);
+        reservationRepository.save(reservation);
+
+        return new ReservationResultDTO(
+                reservation.getId(),
+                "Reservation cancelled successfully"
+        );
     }
 }
+

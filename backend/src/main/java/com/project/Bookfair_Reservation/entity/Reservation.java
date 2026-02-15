@@ -42,6 +42,6 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
-    private ReservationStatus status = ReservationStatus.RESERVED;
+    private ReservationStatus status = ReservationStatus.PENDING_PAYMENT;
 
 }

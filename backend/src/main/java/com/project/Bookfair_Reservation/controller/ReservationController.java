@@ -1,10 +1,13 @@
 package com.project.Bookfair_Reservation.controller;
 
-import com.project.Bookfair_Reservation.dto.reservation.ReservationRequestDTO;
-import com.project.Bookfair_Reservation.dto.reservation.ReservationResponseDTO;
+import com.project.Bookfair_Reservation.dto.request.ReservationRequestDTO;
+import com.project.Bookfair_Reservation.dto.result.ReservationResultDTO;
 import com.project.Bookfair_Reservation.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+
 
 import java.util.List;
 
@@ -16,17 +19,20 @@ public class ReservationController {
     private ReservationService reservationService;
 
     @PostMapping
-    public ReservationResponseDTO createReservation(@RequestBody ReservationRequestDTO requestDTO) {
+    @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR')")
+    public ReservationResultDTO createReservation(@RequestBody ReservationRequestDTO requestDTO) {
         return reservationService.createReservation(requestDTO);
     }
 
     @GetMapping("/user/{userId}")
-    public List<ReservationResponseDTO> getReservationsByUser(@PathVariable Long userId) {
+    @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR')")
+    public List<ReservationResultDTO> getReservationsByUser(@PathVariable Long userId) {
         return reservationService.getReservationsByUser(userId);
     }
 
     @GetMapping
-    public List<ReservationResponseDTO> getAllReservations() {
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public List<ReservationResultDTO> getAllReservations() {
         return reservationService.getAllReservations();
     }
 }
