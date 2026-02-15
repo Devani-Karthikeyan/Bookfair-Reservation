@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 
 @Getter
 @Setter
@@ -14,4 +16,7 @@ public class UserLoginDto {
     String email;
     @NotBlank(message = "Password is required.")
     String password;
+
 }
+
+

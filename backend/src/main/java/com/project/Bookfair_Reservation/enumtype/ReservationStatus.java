@@ -1,7 +1,8 @@
 package com.project.Bookfair_Reservation.enumtype;
 
 public enum ReservationStatus {
-    RESERVED,
+    PENDING_PAYMENT,
     CONFIRMED,
-    CANCELLED
+    CANCELLED,
+    EXPIRED
 }

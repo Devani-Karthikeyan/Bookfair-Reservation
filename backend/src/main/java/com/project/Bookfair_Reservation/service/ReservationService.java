@@ -1,14 +1,17 @@
 package com.project.Bookfair_Reservation.service;
 
-import com.project.Bookfair_Reservation.dto.reservation.ReservationRequestDTO;
-import com.project.Bookfair_Reservation.dto.reservation.ReservationResponseDTO;
+import com.project.Bookfair_Reservation.dto.request.ReservationRequestDTO;
+import com.project.Bookfair_Reservation.dto.result.ReservationResultDTO;
 
 import java.util.List;
 
 public interface ReservationService {
-    ReservationResponseDTO createReservation(ReservationRequestDTO request);
 
-    List<ReservationResponseDTO> getReservationsByUser(Long userId);
+    ReservationResultDTO createReservation(ReservationRequestDTO requestDTO);
 
-    List<ReservationResponseDTO> getAllReservations();
+    List<ReservationResultDTO> getReservationsByUser(Long userId);
+
+    List<ReservationResultDTO> getAllReservations();
+
+    ReservationResultDTO cancelReservation(Long reservationId, Long userId, String role);
 }
