@@ -7,6 +7,9 @@ import com.project.Bookfair_Reservation.entity.ReservationStall;
 import com.project.Bookfair_Reservation.entity.Stall;
 import com.project.Bookfair_Reservation.entity.User;
 import com.project.Bookfair_Reservation.enumtype.ReservationStatus;
+import com.project.Bookfair_Reservation.exception.BadRequestException;
+import com.project.Bookfair_Reservation.exception.ResourceNotFoundException;
+import com.project.Bookfair_Reservation.exception.UnauthorizedActionException;
 import com.project.Bookfair_Reservation.repository.ReservationRepository;
 import com.project.Bookfair_Reservation.repository.StallRepository;
 import com.project.Bookfair_Reservation.repository.UserAuthRepository;
@@ -41,12 +44,12 @@ public class ReservationServiceImpl implements ReservationService {
         if (requestDTO.getStallId() == null ||
                 requestDTO.getStallId().isEmpty() ||
                 requestDTO.getStallId().size() > 3) {
-            throw new RuntimeException("You can reserve maximum 3 stalls at a time.");
+            throw new BadRequestException("You can reserve maximum 3 stalls at a time.");
         }
 
         // Get user
         User user = userRepository.findById(requestDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // Count active reservations  (ignore cancelled & expired)
         int activeReservations =
@@ -56,7 +59,7 @@ public class ReservationServiceImpl implements ReservationService {
                 ));
 
         if (activeReservations + requestDTO.getStallId().size() > 3) {
-            throw new RuntimeException("Maximum total 3 stalls allowed per user.");
+            throw new BadRequestException("Maximum total 3 stalls allowed per user.");
         }
 
         // Prevent double booking
@@ -65,7 +68,7 @@ public class ReservationServiceImpl implements ReservationService {
                     .existsByReservationStalls_StallIdAndStatusNot(stallId, ReservationStatus.CANCELLED);
 
             if (alreadyBooked) {
-                throw new RuntimeException("Stall ID " + stallId + " already reserved.");
+                throw new BadRequestException("Stall ID " + stallId + " already reserved.");
             }
         }
 
@@ -82,7 +85,7 @@ public class ReservationServiceImpl implements ReservationService {
         List<ReservationStall> reservationStalls = new ArrayList<>();
         for (Long stallId : requestDTO.getStallId()) {
             Stall stall = stallRepository.findById(stallId)
-                    .orElseThrow(() -> new RuntimeException("Stall not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Stall not found"));
 
             ReservationStall rs = ReservationStall.builder()
                     .reservation(reservation)
@@ -130,12 +133,12 @@ public class ReservationServiceImpl implements ReservationService {
 
         Reservation reservation =
                 reservationRepository.findById(reservationId)
-                        .orElseThrow(() -> new RuntimeException("Reservation not found"));
+                        .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
 
         // USER can cancel only his reservation
         if (role.equals("PUBLISHER") || role.equals("VENDOR")) {
             if (!reservation.getUser().getId().equals(userId)) {
-                throw new RuntimeException("You can cancel only your reservation.");
+                throw new UnauthorizedActionException("You can cancel only your reservation.");
             }
         }
 

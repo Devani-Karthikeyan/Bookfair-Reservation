@@ -26,5 +26,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDuplicate(DuplicateResourceException ex) {
         return ResponseEntity.status(409).body(ex.getMessage());
     }
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<?> handleBadRequest(BadRequestException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    // 403 handler
+    @ExceptionHandler(UnauthorizedActionException.class)
+    public ResponseEntity<?> handleUnauthorized(UnauthorizedActionException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
 
 }
