@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class ReservationResultDTO {
+
     private Long reservationId;
-    private  String message;
+    private String message;
 }
