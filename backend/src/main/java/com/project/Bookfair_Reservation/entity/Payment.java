@@ -4,6 +4,7 @@ import com.project.Bookfair_Reservation.enumtype.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,7 +29,7 @@ public class Payment {
     private User user;
 
     @Column(nullable = false)
-    private Double amount;
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false)

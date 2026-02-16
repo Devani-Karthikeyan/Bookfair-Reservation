@@ -1,12 +1,10 @@
 package com.project.Bookfair_Reservation.controller;
 
 import com.project.Bookfair_Reservation.entity.Stall;
-import com.project.Bookfair_Reservation.entity.User;
 import com.project.Bookfair_Reservation.service.StallService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,28 +16,45 @@ public class StallController {
     @Autowired
     private StallService stallService;
 
-    // Only PUBLISHER can reserve a stall
-    @PostMapping("/{stallId}/reserve")
-    @PreAuthorize("hasRole('PUBLISHER')")
-    public ResponseEntity<Stall> reserveStall(@PathVariable Long stallId, @AuthenticationPrincipal User publisher) {
-        return ResponseEntity.ok(stallService.reserveStall(stallId, publisher));
+    // Create Stall (EMPLOYEE)
+    @PostMapping
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<Stall> createStall(@RequestBody Stall stall) {
+        return ResponseEntity.ok(stallService.createStall(stall));
     }
 
-    // Only PUBLISHER can book a stall
-    @PostMapping("/{stallId}/book")
-    @PreAuthorize("hasRole('PUBLISHER')")
-    public ResponseEntity<Stall> bookStall(@PathVariable Long stallId, @AuthenticationPrincipal User publisher) {
-        return ResponseEntity.ok(stallService.bookStall(stallId, publisher));
+    // Update Stall
+    @PutMapping("/{stallId}")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<Stall> updateStall(@PathVariable Long stallId,
+                                             @RequestBody Stall stall) {
+        stall.setId(stallId);
+        return ResponseEntity.ok(stallService.updateStall(stall));
     }
 
-    // Only PUBLISHER can cancel their reservation
-    @PostMapping("/{stallId}/cancel")
-    @PreAuthorize("hasRole('PUBLISHER')")
-    public ResponseEntity<Stall> cancelReservation(@PathVariable Long stallId, @AuthenticationPrincipal User publisher) {
-        return ResponseEntity.ok(stallService.cancelReservation(stallId, publisher));
+    // Delete Stall
+    @DeleteMapping("/{stallId}")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<String> deleteStall(@PathVariable Long stallId) {
+        stallService.deleteStall(stallId);
+        return ResponseEntity.ok("Stall deleted successfully");
     }
 
-    // All roles (EMPLOYEE, PUBLISHER, VENDOR) can view available stalls
+    // Get All Stalls
+    @GetMapping
+    @PreAuthorize("hasAnyRole('EMPLOYEE','PUBLISHER','VENDOR')")
+    public ResponseEntity<List<Stall>> getAllStalls() {
+        return ResponseEntity.ok(stallService.getAllStalls());
+    }
+
+    // Get Stall By Id
+    @GetMapping("/{stallId}")
+    @PreAuthorize("hasAnyRole('EMPLOYEE','PUBLISHER','VENDOR')")
+    public ResponseEntity<Stall> getStallById(@PathVariable Long stallId) {
+        return ResponseEntity.ok(stallService.getStallById(stallId));
+    }
+
+    // Get Available Stalls By Hall
     @GetMapping("/hall/{hallId}/available")
     @PreAuthorize("hasAnyRole('EMPLOYEE','PUBLISHER','VENDOR')")
     public ResponseEntity<List<Stall>> getAvailableStalls(@PathVariable Long hallId) {
