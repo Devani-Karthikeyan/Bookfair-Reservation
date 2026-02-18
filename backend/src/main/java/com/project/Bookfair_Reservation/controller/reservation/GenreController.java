@@ -37,6 +37,7 @@ public class GenreController {
             GenreResult response = genreService.addGenre(request);
             generalResponseDto.setData(response);
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
             return ResponseEntity.ok(generalResponseDto);
         }
@@ -52,7 +53,7 @@ public class GenreController {
     }
 
     // Update existing genre
-    @PutMapping("/update?{id}")
+    @PutMapping("/update={id}")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> updateGenre(@PathVariable Long id, @Valid @RequestBody GenreRequest request) {
 
@@ -62,6 +63,7 @@ public class GenreController {
             GenreResult response = genreService.updateGenre(id, request);
             generalResponseDto.setData(response);
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
             return ResponseEntity.ok(generalResponseDto);
         }
@@ -87,6 +89,7 @@ public class GenreController {
             List<GenreResult> genres = genreService.getAllGenres();
             generalResponseDto.setData(genres);
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
             return ResponseEntity.ok(generalResponseDto);
         }
@@ -103,7 +106,7 @@ public class GenreController {
     }
 
     // Get genre by ID
-    @GetMapping("/get/genre?{id}")
+    @GetMapping("/get/genre={id}")
     @PreAuthorize("hasAnyRole('EMPLOYEE','PUBLISHER','VENDOR')")
     public ResponseEntity<GeneralResponseDto> getGenreById(@PathVariable Long id) {
 
@@ -113,6 +116,7 @@ public class GenreController {
             GenreResult response = genreService.getGenreById(id);
             generalResponseDto.setData(response);
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
             return ResponseEntity.ok(generalResponseDto);
         }
@@ -128,7 +132,7 @@ public class GenreController {
     }
 
     // Delete genre by ID
-    @DeleteMapping("/delete/genre?{id}")
+    @DeleteMapping("/delete/genre={id}")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> deleteGenre(@PathVariable Long id) {
 
@@ -138,6 +142,7 @@ public class GenreController {
             genreService.deleteGenreById(id);
             generalResponseDto.setData("Succuss fully deleted");
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
             return ResponseEntity.ok(generalResponseDto);
         }

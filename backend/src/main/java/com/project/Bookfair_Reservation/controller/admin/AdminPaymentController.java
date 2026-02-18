@@ -34,6 +34,7 @@ public class AdminPaymentController {
         try{
             generalResponseDto.setData(paymentService.getAllPayments());
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
             return ResponseEntity.ok(generalResponseDto);
         }
@@ -48,13 +49,14 @@ public class AdminPaymentController {
     }
 
     // View payment details
-    @GetMapping("/payemntid?{id}")
+    @GetMapping("/payemntid={id}")
     public ResponseEntity<GeneralResponseDto> getPayment(@PathVariable Long id) {
         generalResponseDto = new GeneralResponseDto();
 
         try{
             generalResponseDto.setData(paymentService.getPaymentById(id));
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
             return ResponseEntity.ok(generalResponseDto);
         }
@@ -69,13 +71,14 @@ public class AdminPaymentController {
     }
 
     // Filter payments by status
-    @GetMapping("/status?{status}")
+    @GetMapping("/status={status}")
     public ResponseEntity<GeneralResponseDto> getPaymentsByStatus(@PathVariable PaymentStatus status) {
         generalResponseDto = new GeneralResponseDto();
 
         try{
             generalResponseDto.setData(paymentService.getPaymentsByStatus(status));
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
             return ResponseEntity.ok(generalResponseDto);
         }

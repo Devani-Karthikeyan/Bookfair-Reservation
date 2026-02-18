@@ -33,6 +33,7 @@ public class AdminUserController {
         try{
             generalResponseDto.setData(adminUserService.getAllUsers());
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
             return ResponseEntity.ok(generalResponseDto);
         }
@@ -47,7 +48,7 @@ public class AdminUserController {
     }
 
     // Get single user details
-    @GetMapping("/user?{id}")
+    @GetMapping("/user={id}")
     public ResponseEntity<GeneralResponseDto> getUser(@PathVariable Long id) {
 
         generalResponseDto = new GeneralResponseDto();
@@ -55,6 +56,7 @@ public class AdminUserController {
         try{
             generalResponseDto.setData(adminUserService.getUserById(id));
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
             return ResponseEntity.ok(generalResponseDto);
         }
@@ -70,7 +72,7 @@ public class AdminUserController {
     }
 
     // Disable user account
-    @PutMapping("/disable/user?{id}")
+    @PutMapping("/disable/user={id}")
     public ResponseEntity<GeneralResponseDto> disableUser(@PathVariable Long id) {
 
         generalResponseDto = new GeneralResponseDto();
@@ -79,6 +81,7 @@ public class AdminUserController {
             adminUserService.disableUser(id);
             generalResponseDto.setData("User disabled successfully");
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
             return ResponseEntity.ok(generalResponseDto);
         }
@@ -94,7 +97,7 @@ public class AdminUserController {
     }
 
     // Enable user account
-    @PutMapping("/enable/user?{id}")
+    @PutMapping("/enable/user={id}")
     public ResponseEntity<GeneralResponseDto> enableUser(@PathVariable Long id) {
 
         generalResponseDto = new GeneralResponseDto();
@@ -103,6 +106,7 @@ public class AdminUserController {
             adminUserService.enableUser(id);
             generalResponseDto.setData("User disabled successfully");
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
             return ResponseEntity.ok(generalResponseDto);
         }

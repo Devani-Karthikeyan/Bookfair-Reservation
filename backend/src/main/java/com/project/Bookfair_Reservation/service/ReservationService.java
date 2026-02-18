@@ -10,7 +10,7 @@ public interface ReservationService {
 
     ReservationResultDTO createReservation(ReservationRequestDTO requestDTO);
 
-    List<ReservationResultDTO> getReservationsByUser(Long userId);
+    List<ReservationResultDTO> getReservationsByUser(String userEmail);
 
     List<ReservationResultDTO> getAllReservations();
 

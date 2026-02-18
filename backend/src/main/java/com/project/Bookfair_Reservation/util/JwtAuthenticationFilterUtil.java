@@ -1,7 +1,7 @@
 package com.project.Bookfair_Reservation.util;
 
 import com.project.Bookfair_Reservation.entity.User;
-import com.project.Bookfair_Reservation.repository.UserAuthRepository;
+import com.project.Bookfair_Reservation.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,7 +29,7 @@ public class JwtAuthenticationFilterUtil extends OncePerRequestFilter {
     private AccessJwtUtil accessJwtUtil;
 
     @Autowired
-    private UserAuthRepository userAuthRepository;
+    private UserRepository userRepository;
 
 
     private static final String TOKEN_COOKIE_NAME = "ACCESS_TOKEN";
@@ -67,7 +67,7 @@ public class JwtAuthenticationFilterUtil extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().getAuthentication() == null) {
 
                     // Fetch user from DB
-                    User user = userAuthRepository.findByEmail(email).orElse(null);
+                    User user = userRepository.findByEmail(email).orElse(null);
 
                     // If user is disabled, block request
                     if (user == null || !user.isActive()) {

@@ -1,7 +1,7 @@
 package com.project.Bookfair_Reservation.service.Impl;
 
 import com.project.Bookfair_Reservation.entity.User;
-import com.project.Bookfair_Reservation.repository.UserAuthRepository;
+import com.project.Bookfair_Reservation.repository.UserRepository;
 import com.project.Bookfair_Reservation.service.AdminUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminUserServiceImpl implements AdminUserService {
 
-    private final UserAuthRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public List<User> getAllUsers() {
