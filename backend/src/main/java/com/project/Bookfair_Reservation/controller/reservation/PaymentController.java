@@ -32,6 +32,7 @@ public class PaymentController {
             generalResponseDto.setData(paymentService.createPayment(requestDTO));
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(201);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -44,7 +45,7 @@ public class PaymentController {
         }
     }
 
-    @PostMapping("/success/paymentid?{transactionId}")
+    @PostMapping("/success/paymentid={transactionId}")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> completePayment(@PathVariable String transactionId) {
 
@@ -54,6 +55,7 @@ public class PaymentController {
             generalResponseDto.setData(paymentService.completePayment(transactionId));
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -61,14 +63,14 @@ public class PaymentController {
             generalResponseDto.setData(null);
             generalResponseDto.setMsg(e.getMessage());
             generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/hall/success/paymentid?{transactionId} Occurred error is {}", e.getMessage());
+            log.error("Error occurred in /api/hall/success/paymentid={transactionId} Occurred error is {}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
 
 
     }
 
-    @PostMapping("/fail/paymentid?{transactionId}")
+    @PostMapping("/fail/paymentid={transactionId}")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> failPayment(@PathVariable String transactionId) {
 
@@ -78,6 +80,7 @@ public class PaymentController {
             generalResponseDto.setData(paymentService.failPayment(transactionId));
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -85,13 +88,13 @@ public class PaymentController {
             generalResponseDto.setData(null);
             generalResponseDto.setMsg(e.getMessage());
             generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/hall/faild/paymentid?{transactionId} Occurred error is {}", e.getMessage());
+            log.error("Error occurred in /api/hall/faild/paymentid={transactionId} Occurred error is {}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
 
     }
 
-    @PostMapping("/refund/reservationid?{reservationId}")
+    @PostMapping("/refund/reservationid={reservationId}")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> refundReservation(@PathVariable Long reservationId) {
 //        return ResponseEntity.ok(paymentService.refundPayment(reservationId));
@@ -102,6 +105,7 @@ public class PaymentController {
             generalResponseDto.setData(paymentService.refundPayment(reservationId));
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -109,7 +113,7 @@ public class PaymentController {
             generalResponseDto.setData(null);
             generalResponseDto.setMsg(e.getMessage());
             generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/hall/refund/reservationid?{reservationId} Occurred error is {}", e.getMessage());
+            log.error("Error occurred in /api/hall/refund/reservationid={reservationId} Occurred error is {}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
     }

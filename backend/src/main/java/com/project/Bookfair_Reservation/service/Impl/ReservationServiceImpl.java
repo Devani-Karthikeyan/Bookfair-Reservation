@@ -13,10 +13,11 @@ import com.project.Bookfair_Reservation.exception.ResourceNotFoundException;
 import com.project.Bookfair_Reservation.exception.UnauthorizedActionException;
 import com.project.Bookfair_Reservation.repository.ReservationRepository;
 import com.project.Bookfair_Reservation.repository.StallRepository;
-import com.project.Bookfair_Reservation.repository.UserAuthRepository;
+import com.project.Bookfair_Reservation.repository.UserRepository;
 import com.project.Bookfair_Reservation.service.EmailService;
 import com.project.Bookfair_Reservation.service.ReservationService;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,13 +28,14 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@Slf4j
 public class ReservationServiceImpl implements ReservationService {
 
     @Autowired
     private ReservationRepository reservationRepository;
 
     @Autowired
-    private UserAuthRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private StallRepository stallRepository;
@@ -53,7 +55,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // Get user
-        User user = userRepository.findById(requestDTO.getUserId())
+        User user = userRepository.findByEmail(requestDTO.getUserEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // Count active reservations  (ignore cancelled & expired)
@@ -108,7 +110,12 @@ public class ReservationServiceImpl implements ReservationService {
 
     // User can see only his Reservations
     @Override
-    public List<ReservationResultDTO> getReservationsByUser(Long userId) {
+    public List<ReservationResultDTO> getReservationsByUser(String userEmail) {
+
+        Long userId = userRepository.findByEmail(userEmail).get().getId();
+
+        log.info("......................................................................................");
+
         List<Reservation> reservations = reservationRepository.findByUser_Id(userId);
         List<ReservationResultDTO> response = new ArrayList<>();
         for (Reservation r : reservations) {
@@ -131,9 +138,13 @@ public class ReservationServiceImpl implements ReservationService {
     // Cancel Reservation
     @Override
     public ReservationResultDTO cancelReservation(ReservationCancelReqDto reservationCancelReqDto) {
+
         Long reservationId = reservationCancelReqDto.getReservationId();
-        Long userId = reservationCancelReqDto.getUserId();
+        String userEmail = reservationCancelReqDto.getUserEmail();
         String role = String.valueOf(reservationCancelReqDto.getRoles());
+
+        Long userId = userRepository.findByEmail(userEmail).get().getId();
+
         Reservation reservation =
                 reservationRepository.findById(reservationId)
                         .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));

@@ -26,7 +26,7 @@ public class ReservationController {
     GeneralResponseDto generalResponseDto;
 
     @PostMapping("/create")
-    @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR')")
+    @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR', 'EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> createReservation(@RequestBody ReservationRequestDTO requestDTO) {
 
         generalResponseDto = new GeneralResponseDto();
@@ -35,6 +35,7 @@ public class ReservationController {
             generalResponseDto.setData(reservationService.createReservation(requestDTO));
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -47,16 +48,17 @@ public class ReservationController {
         }
     }
 
-    @GetMapping("/user?{userId}")
-    @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR')")
-    public ResponseEntity<GeneralResponseDto> getReservationsByUser(@PathVariable Long userId) {
+    @GetMapping("/user={userEmail}")
+    @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR', 'EMPLOYEE')")
+    public ResponseEntity<GeneralResponseDto> getReservationsByUser(@PathVariable String userEmail) {
 
         generalResponseDto = new GeneralResponseDto();
 
         try{
-            generalResponseDto.setData(reservationService.getReservationsByUser(userId));
+            generalResponseDto.setData(reservationService.getReservationsByUser(userEmail));
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -80,6 +82,7 @@ public class ReservationController {
             generalResponseDto.setData(reservationService.getAllReservations());
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -93,7 +96,7 @@ public class ReservationController {
 
     }
 
-    @PostMapping("/delete/reservationid?{reservationId}")
+    @PostMapping("/delete/reservationid={reservationId}")
     @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR')")
     public ResponseEntity<GeneralResponseDto> deleteReservation(@RequestBody ReservationCancelReqDto reservationCancelReqDto) {
 
@@ -103,6 +106,7 @@ public class ReservationController {
             generalResponseDto.setData(reservationService.cancelReservation(reservationCancelReqDto));
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -110,7 +114,7 @@ public class ReservationController {
             generalResponseDto.setData(null);
             generalResponseDto.setMsg(e.getMessage());
             generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/hall/delete/reservationid?{reservationId} Occurred error is {}", e.getMessage());
+            log.error("Error occurred in /api/hall/delete/reservationid={reservationId} Occurred error is {}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
 

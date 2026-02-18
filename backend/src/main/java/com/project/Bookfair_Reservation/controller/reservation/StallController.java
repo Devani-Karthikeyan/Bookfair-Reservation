@@ -31,6 +31,7 @@ public class StallController {
         try{
             generalResponseDto.setData(stallService.createStall(stall));
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
             return ResponseEntity.ok(generalResponseDto);
         }
@@ -45,7 +46,7 @@ public class StallController {
     }
 
     // Update Stall
-    @PutMapping("/update/stallid?{stallId}")
+    @PutMapping("/update/stallid={stallId}")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> updateStall(@PathVariable Long stallId, @RequestBody Stall stall) {
 
@@ -56,6 +57,7 @@ public class StallController {
 
             generalResponseDto.setData(stallService.updateStall(stall));
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
             return ResponseEntity.ok(generalResponseDto);
         }
@@ -64,13 +66,13 @@ public class StallController {
             generalResponseDto.setData(null);
             generalResponseDto.setMsg(e.getMessage());
             generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/stalls/update/stallid?{stallId}", e.getMessage());
+            log.error("Error occurred in /api/stalls/update/stallid={stallId}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
     }
 
     // Delete Stall
-    @DeleteMapping("/delete/stallid?{stallId}")
+    @DeleteMapping("/delete/stallid={stallId}")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> deleteStall(@PathVariable Long stallId) {
 
@@ -81,6 +83,7 @@ public class StallController {
             generalResponseDto.setData("Stall deleted successfully");
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -88,7 +91,7 @@ public class StallController {
             generalResponseDto.setData(null);
             generalResponseDto.setMsg(e.getMessage());
             generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/stalls/delete/stallid?{stallId}", e.getMessage());
+            log.error("Error occurred in /api/stalls/delete/stallid={stallId}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
 
@@ -105,6 +108,7 @@ public class StallController {
             generalResponseDto.setData(stallService.getAllStalls());
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -119,7 +123,7 @@ public class StallController {
     }
 
     // Get Stall By Id
-    @GetMapping("/get/stallid?{stallId}")
+    @GetMapping("/get/stallid={stallId}")
     @PreAuthorize("hasAnyRole('EMPLOYEE','PUBLISHER','VENDOR')")
     public ResponseEntity<GeneralResponseDto> getStallById(@PathVariable Long stallId) {
 
@@ -129,6 +133,7 @@ public class StallController {
             generalResponseDto.setData(stallService.getStallById(stallId));
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -136,14 +141,14 @@ public class StallController {
             generalResponseDto.setData(null);
             generalResponseDto.setMsg(e.getMessage());
             generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/stalls/get/stallid?{stallId}", e.getMessage());
+            log.error("Error occurred in /api/stalls/get/stallid={stallId}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
 
     }
 
     // Get Available Stalls By Hall
-    @GetMapping("/available/hall/hallid?{hallId}")
+    @GetMapping("/available/hall/hallid={hallId}")
     @PreAuthorize("hasAnyRole('EMPLOYEE','PUBLISHER','VENDOR')")
     public ResponseEntity<GeneralResponseDto> getAvailableStalls(@PathVariable Long hallId) {
 
@@ -153,6 +158,7 @@ public class StallController {
             generalResponseDto.setData(stallService.getAvailableStallsByHall(hallId));
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -160,7 +166,7 @@ public class StallController {
             generalResponseDto.setData(null);
             generalResponseDto.setMsg(e.getMessage());
             generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/stalls/available/hall/hallid?{hallId}", e.getMessage());
+            log.error("Error occurred in /api/stalls/available/hall/hallid={hallId}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
 

@@ -67,7 +67,7 @@ public class HallController {
         }
     }
 
-    @GetMapping("/get/hall?{id}")
+    @GetMapping("/get/hall={id}")
     @PreAuthorize("hasAnyRole('EMPLOYEE','PUBLISHER','VENDOR')")
     public ResponseEntity<GeneralResponseDto> getHall(@PathVariable Long id) {
 
@@ -91,7 +91,7 @@ public class HallController {
     }
 
     // Only EMPLOYEE can update a hall
-    @PutMapping("/update/hall?{id}")
+    @PutMapping("/update/hall={id}")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> updateHall(@PathVariable Long id, @RequestBody Hall hall) {
 
@@ -102,6 +102,7 @@ public class HallController {
             generalResponseDto.setData(hallService.updateHall(hall));
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(201);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -116,7 +117,7 @@ public class HallController {
     }
 
     // Only EMPLOYEE can delete a hall
-    @DeleteMapping("/delete/hall?{id}")
+    @DeleteMapping("/delete/hall={id}")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> deleteHall(@PathVariable Long id) {
 
@@ -126,6 +127,7 @@ public class HallController {
             hallService.deleteHall(id);
             generalResponseDto.setData("Hall deleted successfully");
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(201);
             return ResponseEntity.ok(generalResponseDto);
         }

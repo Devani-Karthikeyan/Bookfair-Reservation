@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 public class ReservationCancelReqDto {
     Long reservationId;
-    Long userId;
+    String userEmail;
     Roles roles;
 }

@@ -8,7 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ReservationRequestDTO {
-    private Long userId;
+    private String userEmail;
     private List<Long> stallId;
 
 }
