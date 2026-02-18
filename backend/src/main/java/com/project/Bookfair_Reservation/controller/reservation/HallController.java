@@ -1,0 +1,110 @@
+package com.project.Bookfair_Reservation.controller.reservation;
+
+import com.project.Bookfair_Reservation.dto.GeneralResponseDto;
+import com.project.Bookfair_Reservation.entity.Hall;
+import com.project.Bookfair_Reservation.service.HallService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/halls")
+@Slf4j
+public class HallController {
+
+    @Autowired
+    HallService hallService;
+
+    GeneralResponseDto generalResponseDto;
+
+    // Only EMPLOYEE can create a hall
+    @PostMapping("/create")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<GeneralResponseDto> createHall(@RequestBody Hall hall) {
+//        return ResponseEntity.ok(hallService.createHall(hall));
+        generalResponseDto = new GeneralResponseDto();
+
+        try{
+            generalResponseDto.setData(hallService.createHall(hall));
+            generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setStatusCode(201);
+            return ResponseEntity.ok(generalResponseDto);
+        }
+
+        catch (Exception e) {
+            generalResponseDto.setData(null);
+            generalResponseDto.setMsg(e.getMessage());
+            generalResponseDto.setStatusCode(501);
+            log.error("Error occurred in /api/hall/create. Occurred error is {}", e.getMessage());
+            return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
+        }
+    }
+
+    // All roles can view halls
+    @GetMapping("/get/allhall")
+    @PreAuthorize("hasAnyRole('EMPLOYEE','PUBLISHER','VENDOR')")
+    public ResponseEntity<GeneralResponseDto> getAllHalls() {
+
+//        return ResponseEntity.ok(hallService.getAllHalls());
+
+        generalResponseDto = new GeneralResponseDto();
+
+        try{
+            generalResponseDto.setData(hallService.getAllHalls());
+            generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setStatusCode(201);
+            return ResponseEntity.ok(generalResponseDto);
+        }
+
+        catch (Exception e) {
+            generalResponseDto.setData(null);
+            generalResponseDto.setMsg(e.getMessage());
+            generalResponseDto.setStatusCode(501);
+            log.error("Error occurred in /api/hall/get/allhall. Occurred error is {}", e.getMessage());
+            return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
+        }
+    }
+
+    @GetMapping("/get/hall={id}")
+    @PreAuthorize("hasAnyRole('EMPLOYEE','PUBLISHER','VENDOR')")
+    public ResponseEntity<GeneralResponseDto> getHall(@PathVariable Long id) {
+
+        generalResponseDto = new GeneralResponseDto();
+
+        try{
+            generalResponseDto.setData(hallService.getHallById(id));
+            generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setStatusCode(201);
+            return ResponseEntity.ok(generalResponseDto);
+        }
+
+        catch (Exception e) {
+            generalResponseDto.setData(null);
+            generalResponseDto.setMsg(e.getMessage());
+            generalResponseDto.setStatusCode(501);
+            log.error("Error occurred in /api/hall/get/hall={}. Occurred error is {}", e.getMessage());
+            return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
+        }
+
+    }
+
+    // Only EMPLOYEE can update a hall
+    @PutMapping("/update/hall={id}")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<Hall> updateHall(@PathVariable Long id, @RequestBody Hall hall) {
+        hall.setId(id);
+        return ResponseEntity.ok(hallService.updateHall(hall));
+    }
+
+    // Only EMPLOYEE can delete a hall
+    @DeleteMapping("/delete/hall={id}")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<String> deleteHall(@PathVariable Long id) {
+        hallService.deleteHall(id);
+        return ResponseEntity.ok("Hall deleted successfully");
+    }
+}

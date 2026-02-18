@@ -1,4 +1,4 @@
-package com.project.Bookfair_Reservation.controller;
+package com.project.Bookfair_Reservation.controller.reservation;
 
 import com.project.Bookfair_Reservation.entity.Stall;
 import com.project.Bookfair_Reservation.service.StallService;

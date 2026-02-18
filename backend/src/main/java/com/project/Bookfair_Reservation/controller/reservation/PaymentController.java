@@ -1,4 +1,4 @@
-package com.project.Bookfair_Reservation.controller;
+package com.project.Bookfair_Reservation.controller.reservation;
 
 import com.project.Bookfair_Reservation.dto.request.PaymentRequestDTO;
 import com.project.Bookfair_Reservation.dto.result.PaymentResultDTO;
