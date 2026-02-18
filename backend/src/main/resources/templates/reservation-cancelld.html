@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reservation Cancelled</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+
+<div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px;">
+
+    <h2 style="color: #e74c3c;">❌ Reservation Cancelled</h2>
+
+    <p>Dear <b th:text="${name}"></b>,</p>
+
+    <p>Your reservation has been cancelled successfully.</p>
+
+    <p><strong>Reservation ID:</strong>
+        <span th:text="${reservationId}"></span>
+    </p>
+
+    <p>If this was not expected, please contact support.</p>
+
+    <hr>
+    <small style="color: gray;">BookFair Reservation System</small>
+
+</div>
+
+</body>
+</html>

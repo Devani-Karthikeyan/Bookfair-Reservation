@@ -9,7 +9,9 @@ import com.project.Bookfair_Reservation.enumtype.ReservationStatus;
 import com.project.Bookfair_Reservation.enumtype.StallStatus;
 import com.project.Bookfair_Reservation.repository.PaymentRepository;
 import com.project.Bookfair_Reservation.repository.ReservationRepository;
+import com.project.Bookfair_Reservation.service.EmailService;
 import com.project.Bookfair_Reservation.service.PaymentService;
+import com.project.Bookfair_Reservation.service.QrCodeGenService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final ReservationRepository reservationRepository;
+    private final QrCodeGenService qrCodeGenService;
+    private final EmailService emailService;
 
     @Override
     public PaymentResultDTO createPayment(PaymentRequestDTO requestDTO) {
@@ -71,7 +75,34 @@ public class PaymentServiceImpl implements PaymentService {
 
         Reservation reservation = payment.getReservation();
         reservation.setStatus(ReservationStatus.CONFIRMED);
-        reservation.setQrCode(UUID.randomUUID().toString());
+
+        //changed the line reservation.setQrCode(UUID().randomUUID().toString()); as below one
+        // QR generation
+        String qrText = "RES-" + reservation.getId();
+        reservation.setQrCode(qrText);
+
+        byte[] qrImage = qrCodeGenService.generateQrCode(qrText, 300, 300);
+
+        // Book stalls
+        reservation.getReservationStalls()
+                .forEach(rs -> rs.getStall().setStatus(StallStatus.BOOKED));
+
+        // Save once (transactional handles flush)
+        paymentRepository.save(payment);
+        reservationRepository.save(reservation);
+
+        // Send email AFTER saving
+        try {
+            emailService.sendReservationConfirmationEmail(
+                    reservation.getUser().getEmail(),
+                    reservation.getUser().getFirstName(),
+                    reservation.getId().toString(),
+                    qrImage
+            );
+        } catch (Exception e) {
+            System.out.println("Email failed: " + e.getMessage());
+        }
+
 
         // BOOK STALLS
         reservation.getReservationStalls().forEach(rs -> rs.getStall().setStatus(StallStatus.BOOKED));
@@ -132,6 +163,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         payment.setPaymentStatus(PaymentStatus.REFUNDED);
         reservation.setStatus(ReservationStatus.CANCELLED);
+        reservation.setQrCode(null);
 
         reservationRepository.save(reservation);
         paymentRepository.save(payment);
