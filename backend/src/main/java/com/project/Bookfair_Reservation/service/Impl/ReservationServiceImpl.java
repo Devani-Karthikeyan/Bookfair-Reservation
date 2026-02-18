@@ -1,5 +1,6 @@
 package com.project.Bookfair_Reservation.service.Impl;
 
+import com.project.Bookfair_Reservation.dto.request.ReservationCancelReqDto;
 import com.project.Bookfair_Reservation.dto.request.ReservationRequestDTO;
 import com.project.Bookfair_Reservation.dto.result.ReservationResultDTO;
 import com.project.Bookfair_Reservation.entity.Reservation;
@@ -111,7 +112,7 @@ public class ReservationServiceImpl implements ReservationService {
         List<Reservation> reservations = reservationRepository.findByUser_Id(userId);
         List<ReservationResultDTO> response = new ArrayList<>();
         for (Reservation r : reservations) {
-            response.add(new ReservationResultDTO(r.getId(), "Status: " + r.getStatus() ));
+            response.add(new ReservationResultDTO(r.getId(), "Status: " + r.getStatus()));
         }
         return response;
     }
@@ -122,19 +123,17 @@ public class ReservationServiceImpl implements ReservationService {
         List<Reservation> reservations = reservationRepository.findAll();
         List<ReservationResultDTO> response = new ArrayList<>();
         for (Reservation r : reservations) {
-            response.add(new ReservationResultDTO(r.getId(), "User ID: " + r.getUser().getId() + "| Status: " + r.getStatus() ));
+            response.add(new ReservationResultDTO(r.getId(), "User ID: " + r.getUser().getId() + "| Status: " + r.getStatus()));
         }
         return response;
     }
 
     // Cancel Reservation
     @Override
-    public ReservationResultDTO cancelReservation(
-            Long reservationId,
-            Long userId,
-            String role
-    ) {
-
+    public ReservationResultDTO cancelReservation(ReservationCancelReqDto reservationCancelReqDto) {
+        Long reservationId = reservationCancelReqDto.getReservationId();
+        Long userId = reservationCancelReqDto.getUserId();
+        String role = String.valueOf(reservationCancelReqDto.getRoles());
         Reservation reservation =
                 reservationRepository.findById(reservationId)
                         .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));

@@ -1,5 +1,6 @@
 package com.project.Bookfair_Reservation.service;
 
+import com.project.Bookfair_Reservation.dto.request.ReservationCancelReqDto;
 import com.project.Bookfair_Reservation.dto.request.ReservationRequestDTO;
 import com.project.Bookfair_Reservation.dto.result.ReservationResultDTO;
 
@@ -13,5 +14,5 @@ public interface ReservationService {
 
     List<ReservationResultDTO> getAllReservations();
 
-    ReservationResultDTO cancelReservation(Long reservationId, Long userId, String role);
+    ReservationResultDTO cancelReservation(ReservationCancelReqDto reservationCancelReqDto);
 }
