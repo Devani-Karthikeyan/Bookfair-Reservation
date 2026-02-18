@@ -1,5 +1,7 @@
 package com.project.Bookfair_Reservation.util;
 
+import com.project.Bookfair_Reservation.entity.User;
+import com.project.Bookfair_Reservation.repository.UserAuthRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,6 +27,10 @@ import java.util.List;
 public class JwtAuthenticationFilterUtil extends OncePerRequestFilter {
     @Autowired
     private AccessJwtUtil accessJwtUtil;
+
+    @Autowired
+    private UserAuthRepository userAuthRepository;
+
 
     private static final String TOKEN_COOKIE_NAME = "ACCESS_TOKEN";
 
@@ -59,6 +65,19 @@ public class JwtAuthenticationFilterUtil extends OncePerRequestFilter {
                 log.info("JWT token extracted successfully. Email: {}, Role: {}", email, role);
                 if (email != null && role != null &&
                         SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                    // Fetch user from DB
+                    User user = userAuthRepository.findByEmail(email).orElse(null);
+
+                    // If user is disabled, block request
+                    if (user == null || !user.isActive()) {
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"res\": false, \"msg\": \"Account is disabled.\", \"statusCode\": 403}");
+                        return; // stop filter chain
+                    }
+
+
 
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(

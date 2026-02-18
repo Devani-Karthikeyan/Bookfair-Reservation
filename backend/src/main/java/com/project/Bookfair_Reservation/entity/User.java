@@ -59,5 +59,8 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private Set<Genre> genres = new HashSet<>();
+
+    private boolean active = true;
+
 }
 
