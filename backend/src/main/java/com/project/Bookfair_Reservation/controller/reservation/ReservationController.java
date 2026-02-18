@@ -3,7 +3,6 @@ package com.project.Bookfair_Reservation.controller.reservation;
 import com.project.Bookfair_Reservation.dto.GeneralResponseDto;
 import com.project.Bookfair_Reservation.dto.request.ReservationCancelReqDto;
 import com.project.Bookfair_Reservation.dto.request.ReservationRequestDTO;
-import com.project.Bookfair_Reservation.dto.result.ReservationResultDTO;
 import com.project.Bookfair_Reservation.service.ReservationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,7 @@ public class ReservationController {
             generalResponseDto.setData(null);
             generalResponseDto.setMsg(e.getMessage());
             generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/reservation/create", e.getMessage());
+            log.error("Error occurred in /api/reservation/create. Occurred error is {}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
     }
