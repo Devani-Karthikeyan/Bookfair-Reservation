@@ -1,11 +1,28 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+
+import { ThemeProvider } from './context/ThemeContext';
+import { AuthModalProvider } from './context/AuthModalContext';
+
 function App() {
-  return (
-    <div className="flex items-center justify-center h-screen bg-blue-500">
-      <h1 className="text-white text-3xl font-bold">
-        Tailwind v4 is Working 🚀
-      </h1>
-    </div>
-  )
+    return (
+        <ThemeProvider>
+            <AuthModalProvider>
+                <Router>
+                    <div className="min-h-screen bg-rose-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300">
+                        <Navbar />
+                        
+                        <Routes>
+                            <Route path="/" element={<div className="pt-24 p-6">Home Page Content</div>} />
+                            {/* Add other routes here */}
+                        </Routes>
+                        <Footer />
+                    </div>
+                </Router>
+            </AuthModalProvider>
+        </ThemeProvider>
+    );
 }
 
-export default App
+export default App;

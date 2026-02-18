@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+@theme {
+  --color-rose-50: #FAF5F7;
+  --color-rose-100: #F5EBEF;
+  --color-rose-200: #EAD6DD;
+  --color-rose-300: #D8B3C0;
+  --color-rose-400: #C3899E;
+  --color-rose-500: #A85F71; /* Rose (Primary) */
+  --color-rose-600: #91455B;
+  --color-rose-700: #773347;
+  --color-rose-800: #632B3C;
+  --color-rose-900: #542536;
+  --color-rose-950: #4E0A31; /* Deep Wine (Background) */
+}
