@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -143,4 +144,50 @@ public class PaymentServiceImpl implements PaymentService {
                 "Reservation refunded successfully."
         );
     }
+
+    @Override
+    public List<PaymentResultDTO> getAllPayments() {
+
+        return paymentRepository.findAll()
+                .stream()
+                .map(p -> new PaymentResultDTO(
+                        p.getTransactionId(),
+                        p.getReservation().getId(),
+                        p.getAmount(),
+                        p.getPaymentStatus(),
+                        "Payment record"
+                ))
+                .toList();
+    }
+
+    @Override
+    public PaymentResultDTO getPaymentById(Long id) {
+
+        Payment p = paymentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        return new PaymentResultDTO(
+                p.getTransactionId(),
+                p.getReservation().getId(),
+                p.getAmount(),
+                p.getPaymentStatus(),
+                "Payment details"
+        );
+    }
+
+    @Override
+    public List<PaymentResultDTO> getPaymentsByStatus(PaymentStatus status) {
+
+        return paymentRepository.findByPaymentStatus(status)
+                .stream()
+                .map(p -> new PaymentResultDTO(
+                        p.getTransactionId(),
+                        p.getReservation().getId(),
+                        p.getAmount(),
+                        p.getPaymentStatus(),
+                        "Filtered payments"
+                ))
+                .toList();
+    }
+
 }
