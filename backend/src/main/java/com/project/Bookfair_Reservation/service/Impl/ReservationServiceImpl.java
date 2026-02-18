@@ -13,6 +13,7 @@ import com.project.Bookfair_Reservation.exception.UnauthorizedActionException;
 import com.project.Bookfair_Reservation.repository.ReservationRepository;
 import com.project.Bookfair_Reservation.repository.StallRepository;
 import com.project.Bookfair_Reservation.repository.UserAuthRepository;
+import com.project.Bookfair_Reservation.service.EmailService;
 import com.project.Bookfair_Reservation.service.ReservationService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Autowired
     private StallRepository stallRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     //Create Reservation
     @Override
@@ -144,6 +148,14 @@ public class ReservationServiceImpl implements ReservationService {
 
         reservation.setStatus(ReservationStatus.CANCELLED);
         reservationRepository.save(reservation);
+
+        //add this code
+        // Send cancellation email
+        emailService.sendReservationCancelledEmail(
+                reservation.getUser().getEmail(),
+                reservation.getUser().getFirstName(),
+                reservation.getId().toString()
+        );
 
         return new ReservationResultDTO(
                 reservation.getId(),
