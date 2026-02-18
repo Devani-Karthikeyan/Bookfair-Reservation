@@ -25,7 +25,7 @@ public class AdminUserController {
     GeneralResponseDto generalResponseDto;
 
     // Get all registered users
-    @GetMapping
+    @GetMapping("/allusers")
     public ResponseEntity<GeneralResponseDto> getAllUsers() {
 
         generalResponseDto = new GeneralResponseDto();
@@ -47,7 +47,7 @@ public class AdminUserController {
     }
 
     // Get single user details
-    @GetMapping("/{id}")
+    @GetMapping("/user?{id}")
     public ResponseEntity<GeneralResponseDto> getUser(@PathVariable Long id) {
 
         generalResponseDto = new GeneralResponseDto();
@@ -70,7 +70,7 @@ public class AdminUserController {
     }
 
     // Disable user account
-    @PutMapping("/{id}/disable")
+    @PutMapping("/disable/user?{id}")
     public ResponseEntity<GeneralResponseDto> disableUser(@PathVariable Long id) {
 
         generalResponseDto = new GeneralResponseDto();
@@ -94,7 +94,7 @@ public class AdminUserController {
     }
 
     // Enable user account
-    @PutMapping("/{id}/enable")
+    @PutMapping("/enable/user?{id}")
     public ResponseEntity<GeneralResponseDto> enableUser(@PathVariable Long id) {
 
         generalResponseDto = new GeneralResponseDto();

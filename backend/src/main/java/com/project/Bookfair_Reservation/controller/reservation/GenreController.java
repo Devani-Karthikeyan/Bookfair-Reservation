@@ -52,7 +52,7 @@ public class GenreController {
     }
 
     // Update existing genre
-    @PutMapping("/update={id}")
+    @PutMapping("/update?{id}")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> updateGenre(@PathVariable Long id, @Valid @RequestBody GenreRequest request) {
 
@@ -103,7 +103,7 @@ public class GenreController {
     }
 
     // Get genre by ID
-    @GetMapping("/get/genre={id}")
+    @GetMapping("/get/genre?{id}")
     @PreAuthorize("hasAnyRole('EMPLOYEE','PUBLISHER','VENDOR')")
     public ResponseEntity<GeneralResponseDto> getGenreById(@PathVariable Long id) {
 
@@ -128,7 +128,7 @@ public class GenreController {
     }
 
     // Delete genre by ID
-    @DeleteMapping("/delete/genre={id}")
+    @DeleteMapping("/delete/genre?{id}")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> deleteGenre(@PathVariable Long id) {
 

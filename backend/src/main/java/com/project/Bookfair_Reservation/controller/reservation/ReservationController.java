@@ -1,5 +1,6 @@
 package com.project.Bookfair_Reservation.controller.reservation;
 
+import com.project.Bookfair_Reservation.dto.GeneralResponseDto;
 import com.project.Bookfair_Reservation.dto.request.ReservationRequestDTO;
 import com.project.Bookfair_Reservation.dto.result.ReservationResultDTO;
 import com.project.Bookfair_Reservation.service.ReservationService;
@@ -16,7 +17,9 @@ import java.util.List;
 public class ReservationController {
 
     @Autowired
-    private ReservationService reservationService;
+    ReservationService reservationService;
+
+    GeneralResponseDto generalResponseDto;
 
     @PostMapping
     @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR')")

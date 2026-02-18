@@ -26,7 +26,7 @@ public class AdminPaymentController {
     GeneralResponseDto generalResponseDto;
 
     // View all payments
-    @GetMapping
+    @GetMapping("/allpayments")
     public ResponseEntity<GeneralResponseDto> getAllPayments() {
 
         generalResponseDto = new GeneralResponseDto();
@@ -48,7 +48,7 @@ public class AdminPaymentController {
     }
 
     // View payment details
-    @GetMapping("/{id}")
+    @GetMapping("/payemntid?{id}")
     public ResponseEntity<GeneralResponseDto> getPayment(@PathVariable Long id) {
         generalResponseDto = new GeneralResponseDto();
 
@@ -69,7 +69,7 @@ public class AdminPaymentController {
     }
 
     // Filter payments by status
-    @GetMapping("/status/{status}")
+    @GetMapping("/status?{status}")
     public ResponseEntity<GeneralResponseDto> getPaymentsByStatus(@PathVariable PaymentStatus status) {
         generalResponseDto = new GeneralResponseDto();
 

@@ -1,5 +1,6 @@
 package com.project.Bookfair_Reservation.controller.reservation;
 
+import com.project.Bookfair_Reservation.dto.GeneralResponseDto;
 import com.project.Bookfair_Reservation.entity.Stall;
 import com.project.Bookfair_Reservation.service.StallService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,9 @@ import java.util.List;
 public class StallController {
 
     @Autowired
-    private StallService stallService;
+    StallService stallService;
 
+    GeneralResponseDto generalResponseDto;
     // Create Stall (EMPLOYEE)
     @PostMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
