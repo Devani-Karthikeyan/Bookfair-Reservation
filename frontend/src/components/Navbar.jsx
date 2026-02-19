@@ -57,17 +57,7 @@ const Navbar = () => {
                 <div className="hidden md:flex gap-8 items-center">
                     <Link to="/" className="hover:text-rose-300 transition-colors font-medium text-sm uppercase tracking-wide">Home</Link>
 
-                    {/* Dropdown Example */}
-                    <div className="relative group cursor-pointer">
-                        <span className="flex items-center gap-1 hover:text-rose-300 transition-colors font-medium text-sm uppercase tracking-wide">
-                            Discover <ChevronDown size={14} />
-                        </span>
-                        <div className="absolute top-full left-0 mt-2 w-48 bg-white text-gray-800 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto border border-rose-100 overflow-hidden">
-                            <Link to="/" className="block px-4 py-3 hover:bg-rose-50 hover:text-rose-700 transition-colors">Upcoming Events</Link>
-                            <Link to="/" className="block px-4 py-3 hover:bg-rose-50 hover:text-rose-700 transition-colors">Featured Authors</Link>
-                            <Link to="/" className="block px-4 py-3 hover:bg-rose-50 hover:text-rose-700 transition-colors">Publishers</Link>
-                        </div>
-                    </div>
+                    
 
                     <Link to="/contact" className="hover:text-rose-300 transition-colors font-medium text-sm uppercase tracking-wide">Contact</Link>
 
