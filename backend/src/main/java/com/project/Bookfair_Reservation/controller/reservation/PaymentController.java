@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/payments")
-@RequiredArgsConstructor
 @Slf4j
 public class PaymentController {
 
@@ -46,7 +45,7 @@ public class PaymentController {
     }
 
     @PostMapping("/success/paymentid={transactionId}")
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> completePayment(@PathVariable String transactionId) {
 
         generalResponseDto = new GeneralResponseDto();
@@ -71,7 +70,7 @@ public class PaymentController {
     }
 
     @PostMapping("/fail/paymentid={transactionId}")
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> failPayment(@PathVariable String transactionId) {
 
         generalResponseDto = new GeneralResponseDto();
@@ -95,9 +94,8 @@ public class PaymentController {
     }
 
     @PostMapping("/refund/reservationid={reservationId}")
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> refundReservation(@PathVariable Long reservationId) {
-//        return ResponseEntity.ok(paymentService.refundPayment(reservationId));
 
         generalResponseDto = new GeneralResponseDto();
 

@@ -23,7 +23,7 @@ public class HallController {
 
     // Only EMPLOYEE can create a hall
     @PostMapping("/create")
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> createHall(@RequestBody Hall hall) {
 
         generalResponseDto = new GeneralResponseDto();
@@ -92,7 +92,7 @@ public class HallController {
 
     // Only EMPLOYEE can update a hall
     @PutMapping("/update/hall={id}")
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> updateHall(@PathVariable Long id, @RequestBody Hall hall) {
 
         generalResponseDto = new GeneralResponseDto();
@@ -118,7 +118,7 @@ public class HallController {
 
     // Only EMPLOYEE can delete a hall
     @DeleteMapping("/delete/hall={id}")
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> deleteHall(@PathVariable Long id) {
 
         generalResponseDto = new GeneralResponseDto();
