@@ -3,6 +3,7 @@ package com.project.Bookfair_Reservation.service.Impl;
 import com.project.Bookfair_Reservation.service.EmailService;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -12,6 +13,7 @@ import org.thymeleaf.context.Context;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
@@ -53,7 +55,8 @@ public class EmailServiceImpl implements EmailService {
             mailSender.send(message);
 
         } catch (Exception e) {
-            e.printStackTrace(); // <-- prints full stack trace in console
+            e.printStackTrace();
+            log.error("Error occurred while sending the confirmation mail {}",e.fillInStackTrace());// <-- prints full stack trace in console
             throw new RuntimeException("Failed to send confirmation email: " + e.getMessage(), e);
         }
 
@@ -85,6 +88,7 @@ public class EmailServiceImpl implements EmailService {
 
         }catch (Exception e) {
             e.printStackTrace();
+            log.error("Error occurred while sending the reservation cancelled mail {}",e.fillInStackTrace());
             throw new RuntimeException("Failed to send cancellation email: " + e.getMessage(), e);
         }
 

@@ -1,40 +1,40 @@
-package com.project.Bookfair_Reservation.controller.admin;
+package com.project.Bookfair_Reservation.controller.reservation;
 
 import com.project.Bookfair_Reservation.dto.GeneralResponseDto;
-import com.project.Bookfair_Reservation.entity.User;
-import com.project.Bookfair_Reservation.service.AdminUserService;
-import lombok.RequiredArgsConstructor;
+import com.project.Bookfair_Reservation.dto.request.ReservationCancelReqDto;
+import com.project.Bookfair_Reservation.dto.request.ReservationRequestDTO;
+import com.project.Bookfair_Reservation.service.ReservationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+
+
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/users")
-@RequiredArgsConstructor
-@PreAuthorize("hasRole('EMPLOYEE')")
+@RequestMapping("/api/reservations")
 @Slf4j
-public class AdminUserController {
+public class ReservationController {
 
     @Autowired
-    AdminUserService adminUserService;
+    ReservationService reservationService;
 
     GeneralResponseDto generalResponseDto;
 
-    // Get all registered users
-    @GetMapping("/allusers")
-    public ResponseEntity<GeneralResponseDto> getAllUsers() {
+    @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR', 'EMPLOYEE')")
+    public ResponseEntity<GeneralResponseDto> createReservation(@RequestBody ReservationRequestDTO requestDTO) {
 
         generalResponseDto = new GeneralResponseDto();
 
         try{
-            generalResponseDto.setData(adminUserService.getAllUsers());
+            generalResponseDto.setData(reservationService.createReservation(requestDTO));
             generalResponseDto.setMsg("Succuss");
-            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -42,22 +42,22 @@ public class AdminUserController {
             generalResponseDto.setData(null);
             generalResponseDto.setMsg(e.getMessage());
             generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/admin/users. Occurred error is {}", e.getMessage());
+            log.error("Error occurred in /api/reservation/create. Occurred error is {}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
     }
 
-    // Get single user details
-    @GetMapping("/user={id}")
-    public ResponseEntity<GeneralResponseDto> getUser(@PathVariable Long id) {
+    @GetMapping("/user={userEmail}")
+    @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR', 'EMPLOYEE')")
+    public ResponseEntity<GeneralResponseDto> getReservationsByUser(@PathVariable String userEmail) {
 
         generalResponseDto = new GeneralResponseDto();
 
         try{
-            generalResponseDto.setData(adminUserService.getUserById(id));
+            generalResponseDto.setData(reservationService.getReservationsByUser(userEmail));
             generalResponseDto.setMsg("Succuss");
-            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -65,49 +65,23 @@ public class AdminUserController {
             generalResponseDto.setData(null);
             generalResponseDto.setMsg(e.getMessage());
             generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/admin/users/{id}. Occurred error is {}", e.getMessage());
-            return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
-        }
-
-    }
-
-    // Disable user account
-    @PutMapping("/disable/user={id}")
-    public ResponseEntity<GeneralResponseDto> disableUser(@PathVariable Long id) {
-
-        generalResponseDto = new GeneralResponseDto();
-
-        try{
-            adminUserService.disableUser(id);
-            generalResponseDto.setData("User disabled successfully");
-            generalResponseDto.setMsg("Succuss");
-            generalResponseDto.setRes(true);
-            generalResponseDto.setStatusCode(200);
-            return ResponseEntity.ok(generalResponseDto);
-        }
-
-        catch (Exception e) {
-            generalResponseDto.setData(null);
-            generalResponseDto.setMsg(e.getMessage());
-            generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/admin/users/{id}/disable. Occurred error is {}", e.getMessage());
+            log.error("Error occurred in /api/reservation/user={userId}. Occurred error is {}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
 
     }
 
-    // Enable user account
-    @PutMapping("/enable/user={id}")
-    public ResponseEntity<GeneralResponseDto> enableUser(@PathVariable Long id) {
+    @GetMapping("/allreservation")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<GeneralResponseDto> getAllReservations() {
 
         generalResponseDto = new GeneralResponseDto();
 
         try{
-            adminUserService.enableUser(id);
-            generalResponseDto.setData("User disabled successfully");
+            generalResponseDto.setData(reservationService.getAllReservations());
             generalResponseDto.setMsg("Succuss");
-            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -115,8 +89,33 @@ public class AdminUserController {
             generalResponseDto.setData(null);
             generalResponseDto.setMsg(e.getMessage());
             generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/admin/users/{id}/enable. Occurred error is {}", e.getMessage());
+            log.error("Error occurred in /api/reservation/allreservation. Occurred error is {}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
+
+    }
+
+    @PostMapping("/delete/reservationid={reservationId}")
+    @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR')")
+    public ResponseEntity<GeneralResponseDto> deleteReservation(@RequestBody ReservationCancelReqDto reservationCancelReqDto) {
+
+        generalResponseDto = new GeneralResponseDto();
+
+        try{
+            generalResponseDto.setData(reservationService.cancelReservation(reservationCancelReqDto));
+            generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
+            return ResponseEntity.ok(generalResponseDto);
+        }
+
+        catch (Exception e) {
+            generalResponseDto.setData(null);
+            generalResponseDto.setMsg(e.getMessage());
+            generalResponseDto.setStatusCode(501);
+            log.error("Error occurred in /api/hall/delete/reservationid={reservationId} Occurred error is {}", e.getMessage());
+            return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
+        }
+
     }
 }

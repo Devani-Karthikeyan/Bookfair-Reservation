@@ -1,40 +1,52 @@
 package com.project.Bookfair_Reservation.exception;
 
+import com.project.Bookfair_Reservation.dto.GeneralResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 404 handler
+    private ResponseEntity<GeneralResponseDto> buildResponse(String msg, int status) {
+        GeneralResponseDto dto = new GeneralResponseDto();
+        dto.setMsg(msg);
+        dto.setStatusCode(status);
+        dto.setRes(false);
+        return ResponseEntity.status(status).body(dto);
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    public ResponseEntity<GeneralResponseDto> handleNotFound(ResourceNotFoundException ex) {
+        return buildResponse(ex.getMessage(), 404);
     }
 
-    // 400 validation handler
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        FieldError fieldError = ex.getBindingResult().getFieldError();
-        String message = fieldError != null ? fieldError.getDefaultMessage() : "Invalid input";
-        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<GeneralResponseDto> handleValidation(MethodArgumentNotValidException ex) {
+        FieldError error = ex.getBindingResult().getFieldError();
+        String msg = error != null ? error.getDefaultMessage() : "Invalid input";
+        return buildResponse(msg, 400);
     }
+
     @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<String> handleDuplicate(DuplicateResourceException ex) {
-        return ResponseEntity.status(409).body(ex.getMessage());
+    public ResponseEntity<GeneralResponseDto> handleDuplicate(DuplicateResourceException ex) {
+        return buildResponse(ex.getMessage(), 409);
     }
+
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<?> handleBadRequest(BadRequestException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<GeneralResponseDto> handleBadRequest(BadRequestException ex) {
+        return buildResponse(ex.getMessage(), 400);
     }
 
-    // 403 handler
     @ExceptionHandler(UnauthorizedActionException.class)
-    public ResponseEntity<?> handleUnauthorized(UnauthorizedActionException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+    public ResponseEntity<GeneralResponseDto> handleUnauthorized(UnauthorizedActionException ex) {
+        return buildResponse(ex.getMessage(), 401);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<GeneralResponseDto> handleGeneric(Exception ex) {
+        return buildResponse(ex.getMessage(), 401);
+    }
 }

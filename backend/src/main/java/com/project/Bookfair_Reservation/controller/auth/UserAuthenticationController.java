@@ -1,4 +1,4 @@
-package com.project.Bookfair_Reservation.controller;
+package com.project.Bookfair_Reservation.controller.auth;
 
 import com.project.Bookfair_Reservation.dto.GeneralResponseDto;
 import com.project.Bookfair_Reservation.dto.request.UserLoginDto;

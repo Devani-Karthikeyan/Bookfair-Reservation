@@ -43,4 +43,7 @@ public class Stall {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reserved_by_id")
     private User reservedBy;
+
+    public Stall(Stall stall) {
+    }
 }

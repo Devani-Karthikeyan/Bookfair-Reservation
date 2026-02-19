@@ -1,8 +1,9 @@
-package com.project.Bookfair_Reservation.controller.admin;
+package com.project.Bookfair_Reservation.controller.reservation;
 
 import com.project.Bookfair_Reservation.dto.GeneralResponseDto;
-import com.project.Bookfair_Reservation.entity.User;
-import com.project.Bookfair_Reservation.service.AdminUserService;
+import com.project.Bookfair_Reservation.dto.request.PaymentRequestDTO;
+import com.project.Bookfair_Reservation.dto.result.PaymentResultDTO;
+import com.project.Bookfair_Reservation.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,31 +11,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/admin/users")
+@RequestMapping("/api/payments")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('EMPLOYEE')")
 @Slf4j
-public class AdminUserController {
+public class PaymentController {
 
     @Autowired
-    AdminUserService adminUserService;
+    PaymentService paymentService;
 
     GeneralResponseDto generalResponseDto;
 
-    // Get all registered users
-    @GetMapping("/allusers")
-    public ResponseEntity<GeneralResponseDto> getAllUsers() {
+    @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR')")
+    public ResponseEntity<GeneralResponseDto> createPayment(@RequestBody PaymentRequestDTO requestDTO) {
 
         generalResponseDto = new GeneralResponseDto();
 
         try{
-            generalResponseDto.setData(adminUserService.getAllUsers());
+            generalResponseDto.setData(paymentService.createPayment(requestDTO));
             generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setStatusCode(201);
             generalResponseDto.setRes(true);
-            generalResponseDto.setStatusCode(200);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -42,22 +40,22 @@ public class AdminUserController {
             generalResponseDto.setData(null);
             generalResponseDto.setMsg(e.getMessage());
             generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/admin/users. Occurred error is {}", e.getMessage());
+            log.error("Error occurred in /api/hall/create. Occurred error is {}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
     }
 
-    // Get single user details
-    @GetMapping("/user={id}")
-    public ResponseEntity<GeneralResponseDto> getUser(@PathVariable Long id) {
+    @PostMapping("/success/paymentid={transactionId}")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<GeneralResponseDto> completePayment(@PathVariable String transactionId) {
 
         generalResponseDto = new GeneralResponseDto();
 
         try{
-            generalResponseDto.setData(adminUserService.getUserById(id));
+            generalResponseDto.setData(paymentService.completePayment(transactionId));
             generalResponseDto.setMsg("Succuss");
-            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -65,24 +63,49 @@ public class AdminUserController {
             generalResponseDto.setData(null);
             generalResponseDto.setMsg(e.getMessage());
             generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/admin/users/{id}. Occurred error is {}", e.getMessage());
+            log.error("Error occurred in /api/hall/success/paymentid={transactionId} Occurred error is {}", e.getMessage());
+            return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
+        }
+
+
+    }
+
+    @PostMapping("/fail/paymentid={transactionId}")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<GeneralResponseDto> failPayment(@PathVariable String transactionId) {
+
+        generalResponseDto = new GeneralResponseDto();
+
+        try{
+            generalResponseDto.setData(paymentService.failPayment(transactionId));
+            generalResponseDto.setMsg("Succuss");
+            generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
+            return ResponseEntity.ok(generalResponseDto);
+        }
+
+        catch (Exception e) {
+            generalResponseDto.setData(null);
+            generalResponseDto.setMsg(e.getMessage());
+            generalResponseDto.setStatusCode(501);
+            log.error("Error occurred in /api/hall/faild/paymentid={transactionId} Occurred error is {}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
 
     }
 
-    // Disable user account
-    @PutMapping("/disable/user={id}")
-    public ResponseEntity<GeneralResponseDto> disableUser(@PathVariable Long id) {
+    @PostMapping("/refund/reservationid={reservationId}")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<GeneralResponseDto> refundReservation(@PathVariable Long reservationId) {
+//        return ResponseEntity.ok(paymentService.refundPayment(reservationId));
 
         generalResponseDto = new GeneralResponseDto();
 
         try{
-            adminUserService.disableUser(id);
-            generalResponseDto.setData("User disabled successfully");
+            generalResponseDto.setData(paymentService.refundPayment(reservationId));
             generalResponseDto.setMsg("Succuss");
-            generalResponseDto.setRes(true);
             generalResponseDto.setStatusCode(200);
+            generalResponseDto.setRes(true);
             return ResponseEntity.ok(generalResponseDto);
         }
 
@@ -90,32 +113,7 @@ public class AdminUserController {
             generalResponseDto.setData(null);
             generalResponseDto.setMsg(e.getMessage());
             generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/admin/users/{id}/disable. Occurred error is {}", e.getMessage());
-            return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
-        }
-
-    }
-
-    // Enable user account
-    @PutMapping("/enable/user={id}")
-    public ResponseEntity<GeneralResponseDto> enableUser(@PathVariable Long id) {
-
-        generalResponseDto = new GeneralResponseDto();
-
-        try{
-            adminUserService.enableUser(id);
-            generalResponseDto.setData("User disabled successfully");
-            generalResponseDto.setMsg("Succuss");
-            generalResponseDto.setRes(true);
-            generalResponseDto.setStatusCode(200);
-            return ResponseEntity.ok(generalResponseDto);
-        }
-
-        catch (Exception e) {
-            generalResponseDto.setData(null);
-            generalResponseDto.setMsg(e.getMessage());
-            generalResponseDto.setStatusCode(501);
-            log.error("Error occurred in /api/admin/users/{id}/enable. Occurred error is {}", e.getMessage());
+            log.error("Error occurred in /api/hall/refund/reservationid={reservationId} Occurred error is {}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
     }

@@ -8,6 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface StallRepository extends JpaRepository<Stall, Long> {
-    List<Stall> findByHallId(Long hallId);
     List<Stall> findByHallIdAndStatus(Long hallId, StallStatus status);
 }

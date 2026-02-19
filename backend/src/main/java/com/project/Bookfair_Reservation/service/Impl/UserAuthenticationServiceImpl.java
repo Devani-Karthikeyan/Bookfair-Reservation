@@ -6,7 +6,7 @@ import com.project.Bookfair_Reservation.dto.request.UserSignUp;
 import com.project.Bookfair_Reservation.dto.result.AuthResult;
 import com.project.Bookfair_Reservation.entity.User;
 import com.project.Bookfair_Reservation.enumtype.Roles;
-import com.project.Bookfair_Reservation.repository.UserAuthRepository;
+import com.project.Bookfair_Reservation.repository.UserRepository;
 import com.project.Bookfair_Reservation.service.UserAuthenticationService;
 import com.project.Bookfair_Reservation.util.AccessJwtUtil;
 import com.project.Bookfair_Reservation.util.HashUtil;
@@ -27,7 +27,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     private RefreshJwtUtil refreshJwtUtil;
 
     @Autowired
-    private UserAuthRepository userAuthRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private HashUtil hashUtil;
@@ -46,7 +46,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
             return new AuthResult(generalResponse, null, null, null, null);
         }
 
-        if (userAuthRepository.existsByEmail(userSignUp.getEmail())) {
+        if (userRepository.existsByEmail(userSignUp.getEmail())) {
             generalResponse.setData("Already Exists Email");
             generalResponse.setMsg("Enter Valid New Email");
             return new AuthResult(generalResponse, null, null, null, null);
@@ -60,7 +60,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
             user.setMobileNumber(userSignUp.getMobileNumber());
             user.setRoles(userSignUp.getRoles());
 
-            User savedUser = userAuthRepository.save(user);
+            User savedUser = userRepository.save(user);
 
             generalResponse.setData("User has been created");
             generalResponse.setRes(true);
@@ -85,7 +85,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
         try {
 
-            User user = userAuthRepository.findByEmail(userLoginDto.getEmail()).orElse(null);
+            User user = userRepository.findByEmail(userLoginDto.getEmail()).orElse(null);
 
             if (user == null) {
                 generalResponse.setData("Invalid Email");
