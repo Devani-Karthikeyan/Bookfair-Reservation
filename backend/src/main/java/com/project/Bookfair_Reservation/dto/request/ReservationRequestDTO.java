@@ -10,5 +10,4 @@ import java.util.List;
 public class ReservationRequestDTO {
     private String userEmail;
     private List<Long> stallId;
-
 }
