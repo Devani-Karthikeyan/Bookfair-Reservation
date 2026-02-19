@@ -81,6 +81,17 @@ const Login = () => {
                     <p className="text-rose-200">
                         Don't have an account? <Link to="/signup" className="text-white hover:text-rose-300 font-bold transition-colors ml-1 underline decoration-rose-500/50 hover:decoration-white">Sign Up</Link>
                     </p>
+
+                    {/* Temporary Dev Helper */}
+                    <button
+                        onClick={() => {
+                            localStorage.setItem('userRole', 'EMPLOYEE');
+                            navigate('/admin/dashboard');
+                        }}
+                        className="mt-4 text-xs text-gray-400 hover:text-white bg-gray-800/50 px-3 py-1 rounded"
+                    >
+                        [DEV] Quick Admin Login
+                    </button>
                 </div>
             </div>
         </div>
