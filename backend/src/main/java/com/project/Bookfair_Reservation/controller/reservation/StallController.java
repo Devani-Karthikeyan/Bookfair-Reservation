@@ -23,7 +23,7 @@ public class StallController {
 
     // Create Stall (EMPLOYEE)
     @PostMapping("/create")
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> createStall(@RequestBody Stall stall) {
 
         generalResponseDto = new GeneralResponseDto();
@@ -47,7 +47,7 @@ public class StallController {
 
     // Update Stall
     @PutMapping("/update/stallid={stallId}")
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> updateStall(@PathVariable Long stallId, @RequestBody Stall stall) {
 
         generalResponseDto = new GeneralResponseDto();
@@ -73,7 +73,7 @@ public class StallController {
 
     // Delete Stall
     @DeleteMapping("/delete/stallid={stallId}")
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> deleteStall(@PathVariable Long stallId) {
 
         generalResponseDto = new GeneralResponseDto();

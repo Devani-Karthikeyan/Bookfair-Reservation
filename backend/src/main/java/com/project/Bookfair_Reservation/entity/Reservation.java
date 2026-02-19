@@ -42,7 +42,7 @@ public class Reservation {
     private ReservationStatus status = ReservationStatus.PENDING_PAYMENT;
 
     // Store total payment amount
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(nullable = true, precision = 10, scale = 2)
     private BigDecimal totalAmount;
 
     @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)

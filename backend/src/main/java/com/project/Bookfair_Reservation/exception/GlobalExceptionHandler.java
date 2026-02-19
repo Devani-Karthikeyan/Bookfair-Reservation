@@ -47,6 +47,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<GeneralResponseDto> handleGeneric(Exception ex) {
-        return buildResponse(ex.getMessage(), 401);
+        return buildResponse(ex.getMessage(), 500);
     }
 }

@@ -47,6 +47,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationResultDTO createReservation(ReservationRequestDTO requestDTO) {
 
+        try {
         // Validate stall count (max 3 at once)
         if (requestDTO.getStallId() == null ||
                 requestDTO.getStallId().isEmpty() ||
@@ -54,9 +55,12 @@ public class ReservationServiceImpl implements ReservationService {
             throw new BadRequestException("You can reserve maximum 3 stalls at a time.");
         }
 
+        log.info("Reservation validation succuss...............");
+
         // Get user
         User user = userRepository.findByEmail(requestDTO.getUserEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
 
         // Count active reservations  (ignore cancelled & expired)
         int activeReservations =
@@ -103,9 +107,12 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         reservation.setReservationStalls(reservationStalls);
-        reservationRepository.save(reservation);
 
-        return new ReservationResultDTO(reservation.getId(), "Reservation successful");
+            reservationRepository.save(reservation);
+            return new ReservationResultDTO(reservation.getId(), "Reservation successful");
+        } catch (Exception e) {
+            throw new BadRequestException(e.getMessage());
+        }
     }
 
     // User can see only his Reservations
