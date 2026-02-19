@@ -25,7 +25,7 @@ public class ReservationController {
     GeneralResponseDto generalResponseDto;
 
     @PostMapping("/create")
-    @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR')")
     public ResponseEntity<GeneralResponseDto> createReservation(@RequestBody ReservationRequestDTO requestDTO) {
 
         generalResponseDto = new GeneralResponseDto();
@@ -96,7 +96,7 @@ public class ReservationController {
     }
 
     @PostMapping("/delete/reservationid={reservationId}")
-    @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR')")
+    @PreAuthorize("hasAnyRole('PUBLISHER','VENDOR', 'EMPLOYEE')")
     public ResponseEntity<GeneralResponseDto> deleteReservation(@RequestBody ReservationCancelReqDto reservationCancelReqDto) {
 
         generalResponseDto = new GeneralResponseDto();
