@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import Contact from './pages/Contact';
 
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthModalProvider } from './context/AuthModalContext';
@@ -14,6 +15,7 @@ function App() {
                         <Navbar />
                         
                         <Routes>
+                            <Route path="/contact" element={<Contact />} />
                             <Route path="/" element={<div className="pt-24 p-6">Home Page Content</div>} />
                             {/* Add other routes here */}
                         </Routes>
