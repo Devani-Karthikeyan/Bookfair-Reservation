@@ -3,6 +3,7 @@ import Contact from './pages/Contact';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import StallBookingMap from './pages/StallBookingMap';
 
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthModalProvider } from './context/AuthModalContext';
@@ -31,6 +32,7 @@ function App() {
                             <Route path="/contact" element={<Contact />} />
                             <Route path="/" element={<Home />} />
                             <Route path="/dashboard" element={<UserDashboard />} />
+                            <Route path="/book-stalls" element={<StallBookingMap />} />
                             {/* Add other public routes here */}
                         </Route>
 

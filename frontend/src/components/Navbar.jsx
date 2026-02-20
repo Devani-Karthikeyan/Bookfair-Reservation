@@ -57,11 +57,11 @@ const Navbar = () => {
                 <div className="hidden md:flex gap-8 items-center">
                     <Link to="/" className="hover:text-rose-300 transition-colors font-medium text-sm uppercase tracking-wide">Home</Link>
 
-                    
+
 
                     <Link to="/contact" className="hover:text-rose-300 transition-colors font-medium text-sm uppercase tracking-wide">Contact</Link>
 
-                    <Link to="/dashboard" className="bg-gradient-to-r from-rose-600 to-rose-800 hover:from-rose-500 hover:to-rose-700 px-5 py-2.5 rounded-full shadow-lg transition-all transform hover:scale-105 font-bold text-sm">
+                    <Link to="/book-stalls" className="bg-gradient-to-r from-rose-600 to-rose-800 hover:from-rose-500 hover:to-rose-700 px-5 py-2.5 rounded-full shadow-lg transition-all transform hover:scale-105 font-bold text-sm">
                         Book a Stall
                     </Link>
 
@@ -83,23 +83,23 @@ const Navbar = () => {
                             </button>
                         </div>
                     ) : (
-<div className="flex items-center gap-4">
-  <button
-    type="button"
-    onClick={() => openAuthModal('login')}
-    className="font-semibold bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
-  >
-    Login
-  </button>
+                        <div className="flex items-center gap-4">
+                            <button
+                                type="button"
+                                onClick={() => openAuthModal('login')}
+                                className="font-semibold bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                            >
+                                Login
+                            </button>
 
-  <button
-    type="button"
-    onClick={() => openAuthModal('signup')}
-    className="font-semibold bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
-  >
-    Sign Up
-  </button>
-</div>
+                            <button
+                                type="button"
+                                onClick={() => openAuthModal('signup')}
+                                className="font-semibold bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                            >
+                                Sign Up
+                            </button>
+                        </div>
 
                     )}
                 </div>
@@ -132,7 +132,7 @@ const Navbar = () => {
 
                             <div className="border-t border-white/10 my-2"></div>
 
-                            <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-rose-100 hover:text-white flex items-center gap-3">
+                            <Link to="/book-stalls" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-rose-100 hover:text-white flex items-center gap-3">
                                 Book a Stall
                             </Link>
 
