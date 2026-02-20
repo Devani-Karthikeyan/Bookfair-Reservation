@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import axios from 'axios';
 import PaymentModal from '../components/PaymentModal';
 
 const StallBookingMap = () => {
@@ -7,6 +8,11 @@ const StallBookingMap = () => {
     const [selectedStalls, setSelectedStalls] = useState([]);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
+    // API States
+    const [hallData, setHallData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     // Pricing Constants
     const PRICES = {
         large: 5000,
@@ -14,43 +20,62 @@ const StallBookingMap = () => {
         small: 1500
     };
 
-    // Generate mock data for 3 Halls
-    const hallData = useMemo(() => {
-        const generateHalls = () => {
-            const data = {};
-            for (let h = 1; h <= 3; h++) {
-                data[h] = {
-                    large: Array.from({ length: 10 }, (_, i) => ({
-                        id: `H${h}-L${i + 1}`,
-                        label: `L${i + 1}`,
-                        type: 'large',
-                        price: PRICES.large,
-                        status: (i + h) % 4 === 0 ? 'booked' : 'available',
-                    })),
-                    medium: Array.from({ length: 16 }, (_, i) => ({
-                        id: `H${h}-M${i + 1}`,
-                        label: `M${i + 1}`,
-                        type: 'medium',
-                        price: PRICES.medium,
-                        status: (i + h) % 5 === 0 ? 'booked' : 'available',
-                    })),
-                    small: Array.from({ length: 16 }, (_, i) => ({
-                        id: `H${h}-S${i + 1}`,
-                        label: `S${i + 1}`,
-                        type: 'small',
-                        price: PRICES.small,
-                        status: (i + h) % 3 === 0 ? 'booked' : 'available',
-                    }))
-                };
-            }
-            // Manually set some specific styles based on original mock just for Hall 1 if desired, 
-            // but dynamic generation is better for 3 halls.
-            return data;
-        };
-        return generateHalls();
-    }, []);
+    // Fetch real data from backend
+    useEffect(() => {
+        const fetchStalls = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/stalls/allstalls');
+                const stallsArray = response.data.data || [];
 
-    const { large: largeStalls, medium: mediumStalls, small: smallStalls } = hallData[activeHall];
+                const newHallData = {};
+
+                stallsArray.forEach(stall => {
+                    const hallId = stall.hall.id;
+                    const typeInfo = stall.size.toLowerCase(); // large, medium, small
+
+                    // Initialize hall if not exists
+                    if (!newHallData[hallId]) {
+                        newHallData[hallId] = {
+                            name: stall.hall.hallName || `Hall ${hallId}`,
+                            large: [],
+                            medium: [],
+                            small: []
+                        };
+                    }
+
+                    // Extract label like "L1" from "H1-L1", fallback to original if no hyphen
+                    const parts = stall.stallName.split('-');
+                    const labelRaw = parts.length > 1 ? parts.slice(1).join('-') : stall.stallName;
+
+                    if (newHallData[hallId][typeInfo]) {
+                        newHallData[hallId][typeInfo].push({
+                            id: stall.id,
+                            label: labelRaw,
+                            type: typeInfo,
+                            price: stall.price,
+                            status: stall.status.toLowerCase()
+                        });
+                    }
+                });
+
+                setHallData(newHallData);
+
+                // Ensure activeHall selects an existing backend hall
+                const hallKeys = Object.keys(newHallData);
+                if (hallKeys.length > 0) {
+                    setActiveHall(Number(hallKeys[0]));
+                }
+
+                setIsLoading(false);
+            } catch (err) {
+                console.error("Error fetching stalls:", err);
+                setError("Failed to load stalls data. Please try again later.");
+                setIsLoading(false);
+            }
+        };
+
+        fetchStalls();
+    }, []);
 
     // Handle Stall Click
     const handleStallClick = (stall) => {
@@ -60,6 +85,10 @@ const StallBookingMap = () => {
             if (prev.includes(stall.id)) {
                 return prev.filter(id => id !== stall.id);
             } else {
+                if (prev.length >= 3) {
+                    alert("Maximum of 3 stalls can be reserved at a time.");
+                    return prev;
+                }
                 return [...prev, stall.id];
             }
         });
@@ -68,6 +97,8 @@ const StallBookingMap = () => {
     // Derived State for Payment
     const selectedStallsDetails = useMemo(() => {
         const details = [];
+        if (!hallData) return details;
+
         // Search across all halls to find details for selected IDs
         for (const hallId in hallData) {
             const hall = hallData[hallId];
@@ -84,12 +115,38 @@ const StallBookingMap = () => {
         return selectedStallsDetails.reduce((sum, stall) => sum + stall.price, 0);
     }, [selectedStallsDetails]);
 
-    const handlePaymentSuccess = () => {
-        // Mock successful payment
-        alert(`Payment of ₹${totalAmount.toLocaleString()} successful! Stalls booked.`);
-        // In a real app we'd trigger an API call to change status to 'booked' globally
-        setSelectedStalls([]);
-        setIsPaymentModalOpen(false);
+    if (isLoading) {
+        return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950"><p className="text-xl font-bold text-slate-500">Loading Map Data...</p></div>;
+    }
+
+    if (error) {
+        return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950"><p className="text-xl font-bold text-red-500">{error}</p></div>;
+    }
+
+    const { large: largeStalls, medium: mediumStalls, small: smallStalls } = hallData[activeHall] || { large: [], medium: [], small: [] };
+
+    const handlePaymentSuccess = async (customerDetails) => {
+        try {
+            const payload = {
+                userEmail: customerDetails.email,
+                stallId: selectedStalls
+            };
+
+            // Post reservation
+            await axios.post('http://localhost:8080/api/reservations/create', payload, {
+                withCredentials: true
+            });
+            alert(`Payment of ₹${totalAmount.toLocaleString()} successful! Stalls booked for ${customerDetails.name}.`);
+
+            setSelectedStalls([]);
+            setIsPaymentModalOpen(false);
+
+            // Reload page to reflect new stall statuses
+            window.location.reload();
+        } catch (err) {
+            console.error("Reservation Error:", err);
+            alert("Failed to book stalls: " + (err.response?.data?.msg || err.message));
+        }
     };
 
     // Reusable Stall Component
@@ -148,19 +205,23 @@ const StallBookingMap = () => {
                     </div>
 
                     {/* Hall Selectors */}
-                    <div className="flex space-x-4 bg-white dark:bg-slate-900 p-2 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-                        {[1, 2, 3].map((hallNum) => (
-                            <button
-                                key={hallNum}
-                                onClick={() => setActiveHall(hallNum)}
-                                className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 ${activeHall === hallNum
-                                    ? 'bg-rose-600 text-white shadow-md'
-                                    : 'text-slate-600 hover:bg-rose-50 dark:text-slate-300 dark:hover:bg-slate-800'
-                                    }`}
-                            >
-                                Hall {hallNum}
-                            </button>
-                        ))}
+                    <div className="flex space-x-4 overflow-x-auto bg-white dark:bg-slate-900 p-2 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+                        {hallData && Object.keys(hallData).map((hallIdStr) => {
+                            const hallNum = Number(hallIdStr);
+                            const hallName = hallData[hallIdStr].name || `Hall ${hallNum}`;
+                            return (
+                                <button
+                                    key={hallNum}
+                                    onClick={() => setActiveHall(hallNum)}
+                                    className={`whitespace-nowrap px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 ${activeHall === hallNum
+                                        ? 'bg-rose-600 text-white shadow-md'
+                                        : 'text-slate-600 hover:bg-rose-50 dark:text-slate-300 dark:hover:bg-slate-800'
+                                        }`}
+                                >
+                                    {hallName}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
@@ -274,7 +335,13 @@ const StallBookingMap = () => {
                             </p>
                         </div>
                         <button
-                            onClick={() => setIsPaymentModalOpen(true)}
+                            onClick={() => {
+                                if (selectedStalls.length > 3) {
+                                    alert("You can only reserve a maximum of 3 stalls at a time.");
+                                    return;
+                                }
+                                setIsPaymentModalOpen(true);
+                            }}
                             className="w-full sm:w-auto px-8 py-3.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl shadow-lg shadow-rose-500/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                         >
                             Proceed to Payment
