@@ -1,0 +1,98 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.2)
+
+2026-02-20T21:06:10.479+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] c.p.B.BookfairReservationApplication     : Starting BookfairReservationApplication v0.0.1-SNAPSHOT using Java 21.0.5 with PID 16044 (C:\Users\devan\Downloads\Last try\Bookfair-Reservation\backend\target\Bookfair-Reservation-0.0.1-SNAPSHOT.jar started by devan in C:\Users\devan\Downloads\Last try\Bookfair-Reservation\backend)
+2026-02-20T21:06:10.484+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] c.p.B.BookfairReservationApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-02-20T21:06:11.999+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-20T21:06:12.090+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 83 ms. Found 6 JPA repository interfaces.
+2026-02-20T21:06:13.140+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-02-20T21:06:13.176+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-20T21:06:13.176+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-02-20T21:06:13.232+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2619 ms
+2026-02-20T21:06:13.442+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-02-20T21:06:13.554+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.1.Final
+2026-02-20T21:06:14.107+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-20T21:06:14.150+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] com.zaxxer.hikari.HikariDataSource       : HikariCP - Starting...
+2026-02-20T21:06:14.593+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariCP - Added connection com.mysql.cj.jdbc.ConnectionImpl@71687d8f
+2026-02-20T21:06:14.594+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] com.zaxxer.hikari.HikariDataSource       : HikariCP - Start completed.
+2026-02-20T21:06:14.690+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/bookfair]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: bookfair/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-20T21:06:15.816+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-20T21:06:15.910+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-20T21:06:16.018+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-20T21:06:16.794+05:30  WARN 16044 --- [Bookfair-Reservation] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-02-20T21:06:18.145+05:30  WARN 16044 --- [Bookfair-Reservation] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dataSourceScriptDatabaseInitializer' defined in class path resource [org/springframework/boot/jdbc/autoconfigure/DataSourceInitializationAutoConfiguration.class]: Failed to execute SQL script statement #1 of URL [jar:nested:/C:/Users/devan/Downloads/Last%20try/Bookfair-Reservation/backend/target/Bookfair-Reservation-0.0.1-SNAPSHOT.jar/!BOOT-INF/classes/!/data.sql]: INSERT INTO halls (hall_name, description) VALUES ('Hall 1', 'Main Hall Stage - Grand Auditorium')
+2026-02-20T21:06:18.148+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-20T21:06:18.149+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] com.zaxxer.hikari.HikariDataSource       : HikariCP - Shutdown initiated...
+2026-02-20T21:06:18.161+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] com.zaxxer.hikari.HikariDataSource       : HikariCP - Shutdown completed.
+2026-02-20T21:06:18.163+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2026-02-20T21:06:18.176+05:30  INFO 16044 --- [Bookfair-Reservation] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-02-20T21:06:18.196+05:30 ERROR 16044 --- [Bookfair-Reservation] [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dataSourceScriptDatabaseInitializer' defined in class path resource [org/springframework/boot/jdbc/autoconfigure/DataSourceInitializationAutoConfiguration.class]: Failed to execute SQL script statement #1 of URL [jar:nested:/C:/Users/devan/Downloads/Last%20try/Bookfair-Reservation/backend/target/Bookfair-Reservation-0.0.1-SNAPSHOT.jar/!BOOT-INF/classes/!/data.sql]: INSERT INTO halls (hall_name, description) VALUES ('Hall 1', 'Main Hall Stage - Grand Auditorium')
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1817) ~[spring-beans-7.0.3.jar!/:7.0.3]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:603) ~[spring-beans-7.0.3.jar!/:7.0.3]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:525) ~[spring-beans-7.0.3.jar!/:7.0.3]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:333) ~[spring-beans-7.0.3.jar!/:7.0.3]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:371) ~[spring-beans-7.0.3.jar!/:7.0.3]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:331) ~[spring-beans-7.0.3.jar!/:7.0.3]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:196) ~[spring-beans-7.0.3.jar!/:7.0.3]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1218) ~[spring-beans-7.0.3.jar!/:7.0.3]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1184) ~[spring-beans-7.0.3.jar!/:7.0.3]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1121) ~[spring-beans-7.0.3.jar!/:7.0.3]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:993) ~[spring-context-7.0.3.jar!/:7.0.3]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:620) ~[spring-context-7.0.3.jar!/:7.0.3]
+	at org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:143) ~[spring-boot-web-server-4.0.2.jar!/:4.0.2]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:756) ~[spring-boot-4.0.2.jar!/:4.0.2]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:445) ~[spring-boot-4.0.2.jar!/:4.0.2]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:321) ~[spring-boot-4.0.2.jar!/:4.0.2]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1365) ~[spring-boot-4.0.2.jar!/:4.0.2]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1354) ~[spring-boot-4.0.2.jar!/:4.0.2]
+	at com.project.Bookfair_Reservation.BookfairReservationApplication.main(BookfairReservationApplication.java:10) ~[!/:0.0.1-SNAPSHOT]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:106) ~[Bookfair-Reservation-0.0.1-SNAPSHOT.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:64) ~[Bookfair-Reservation-0.0.1-SNAPSHOT.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:40) ~[Bookfair-Reservation-0.0.1-SNAPSHOT.jar:0.0.1-SNAPSHOT]
+Caused by: org.springframework.jdbc.datasource.init.ScriptStatementFailedException: Failed to execute SQL script statement #1 of URL [jar:nested:/C:/Users/devan/Downloads/Last%20try/Bookfair-Reservation/backend/target/Bookfair-Reservation-0.0.1-SNAPSHOT.jar/!BOOT-INF/classes/!/data.sql]: INSERT INTO halls (hall_name, description) VALUES ('Hall 1', 'Main Hall Stage - Grand Auditorium')
+	at org.springframework.jdbc.datasource.init.ScriptUtils.executeSqlScript(ScriptUtils.java:293) ~[spring-jdbc-7.0.3.jar!/:7.0.3]
+	at org.springframework.jdbc.datasource.init.ResourceDatabasePopulator.populate(ResourceDatabasePopulator.java:254) ~[spring-jdbc-7.0.3.jar!/:7.0.3]
+	at org.springframework.jdbc.datasource.init.DatabasePopulatorUtils.execute(DatabasePopulatorUtils.java:54) ~[spring-jdbc-7.0.3.jar!/:7.0.3]
+	at org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer.runScripts(DataSourceScriptDatabaseInitializer.java:87) ~[spring-boot-jdbc-4.0.2.jar!/:4.0.2]
+	at org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer.runScripts(AbstractScriptDatabaseInitializer.java:159) ~[spring-boot-sql-4.0.2.jar!/:4.0.2]
+	at org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer.applyScripts(AbstractScriptDatabaseInitializer.java:120) ~[spring-boot-sql-4.0.2.jar!/:4.0.2]
+	at org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer.applyDataScripts(AbstractScriptDatabaseInitializer.java:113) ~[spring-boot-sql-4.0.2.jar!/:4.0.2]
+	at org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer.initializeDatabase(AbstractScriptDatabaseInitializer.java:88) ~[spring-boot-sql-4.0.2.jar!/:4.0.2]
+	at org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer.afterPropertiesSet(AbstractScriptDatabaseInitializer.java:77) ~[spring-boot-sql-4.0.2.jar!/:4.0.2]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1864) ~[spring-beans-7.0.3.jar!/:7.0.3]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1813) ~[spring-beans-7.0.3.jar!/:7.0.3]
+	... 23 common frames omitted
+Caused by: java.sql.SQLIntegrityConstraintViolationException: Duplicate entry 'Hall 1' for key 'halls.UKkd6jw8073yttln7ewmyg7msxa'
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:109) ~[mysql-connector-j-9.5.0.jar!/:9.5.0]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114) ~[mysql-connector-j-9.5.0.jar!/:9.5.0]
+	at com.mysql.cj.jdbc.StatementImpl.executeInternal(StatementImpl.java:837) ~[mysql-connector-j-9.5.0.jar!/:9.5.0]
+	at com.mysql.cj.jdbc.StatementImpl.execute(StatementImpl.java:685) ~[mysql-connector-j-9.5.0.jar!/:9.5.0]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:95) ~[HikariCP-7.0.2.jar!/:na]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-7.0.2.jar!/:na]
+	at org.springframework.jdbc.datasource.init.ScriptUtils.executeSqlScript(ScriptUtils.java:261) ~[spring-jdbc-7.0.3.jar!/:7.0.3]
+	... 33 common frames omitted
+
