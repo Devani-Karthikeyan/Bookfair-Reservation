@@ -1,6 +1,5 @@
 package com.project.Bookfair_Reservation.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,7 +22,6 @@ public class Hall {
 
     private String description;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "hall")
     private List<Stall> stalls;
 }

@@ -43,71 +43,70 @@ public class ReservationServiceImpl implements ReservationService {
     @Autowired
     private EmailService emailService;
 
-    // Create Reservation
+    //Create Reservation
     @Override
     public ReservationResultDTO createReservation(ReservationRequestDTO requestDTO) {
 
         try {
-            // Validate stall count (max 3 at once)
-            if (requestDTO.getStallId() == null ||
-                    requestDTO.getStallId().isEmpty() ||
-                    requestDTO.getStallId().size() > 3) {
-                throw new BadRequestException("You can reserve maximum 3 stalls at a time.");
+        // Validate stall count (max 3 at once)
+        if (requestDTO.getStallId() == null ||
+                requestDTO.getStallId().isEmpty() ||
+                requestDTO.getStallId().size() > 3) {
+            throw new BadRequestException("You can reserve maximum 3 stalls at a time.");
+        }
+
+        log.info("Reservation validation succuss...............");
+
+        // Get user
+        User user = userRepository.findByEmail(requestDTO.getUserEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+
+        // Count active reservations  (ignore cancelled & expired)
+        int activeReservations =
+                reservationRepository.countByUser_IdAndStatusNotIn(user.getId(), Arrays.asList(
+                        ReservationStatus.CANCELLED,
+                        ReservationStatus.EXPIRED
+                ));
+
+        if (activeReservations + requestDTO.getStallId().size() > 3) {
+            throw new BadRequestException("Maximum total 3 stalls allowed per user.");
+        }
+
+        // Prevent double booking
+        for (Long stallId : requestDTO.getStallId()) {
+            boolean alreadyBooked = reservationRepository
+                    .existsByReservationStalls_StallIdAndStatusNot(stallId, ReservationStatus.CANCELLED);
+
+            if (alreadyBooked) {
+                throw new BadRequestException("Stall ID " + stallId + " already reserved.");
             }
+        }
 
-            log.info("Reservation validation succuss...............");
+        // Create reservation
+        Reservation reservation = Reservation.builder()
+                .user(user)
+                .qrCode(UUID.randomUUID().toString())
+                .status(ReservationStatus.PENDING_PAYMENT)
+                .build();
 
-            // Get user
-            User user = userRepository.findByEmail(requestDTO.getUserEmail())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        reservation = reservationRepository.save(reservation);
 
-            // Count active reservations (ignore cancelled & expired)
-            int activeReservations = reservationRepository.countByUser_IdAndStatusNotIn(user.getId(), Arrays.asList(
-                    ReservationStatus.CANCELLED,
-                    ReservationStatus.EXPIRED));
+        // Create reservation-stall mapping
+        List<ReservationStall> reservationStalls = new ArrayList<>();
+        for (Long stallId : requestDTO.getStallId()) {
+            Stall stall = stallRepository.findById(stallId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Stall not found"));
 
-            if (activeReservations + requestDTO.getStallId().size() > 3) {
-                throw new BadRequestException("Maximum total 3 stalls allowed per user.");
-            }
-
-            // Prevent double booking
-            for (Long stallId : requestDTO.getStallId()) {
-                boolean alreadyBooked = reservationRepository
-                        .existsByReservationStalls_StallIdAndStatusNot(stallId, ReservationStatus.CANCELLED);
-
-                if (alreadyBooked) {
-                    throw new BadRequestException("Stall ID " + stallId + " already reserved.");
-                }
-            }
-
-            // Create reservation
-            Reservation reservation = Reservation.builder()
-                    .user(user)
-                    .qrCode(UUID.randomUUID().toString())
-                    .status(ReservationStatus.PENDING_PAYMENT)
+            ReservationStall rs = ReservationStall.builder()
+                    .reservation(reservation)
+                    .stall(stall)
                     .build();
 
-            reservation = reservationRepository.save(reservation);
+            reservationStalls.add(rs);
+        }
 
-            // Create reservation-stall mapping
-            List<ReservationStall> reservationStalls = new ArrayList<>();
-            for (Long stallId : requestDTO.getStallId()) {
-                Stall stall = stallRepository.findById(stallId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Stall not found"));
-
-                ReservationStall rs = ReservationStall.builder()
-                        .reservation(reservation)
-                        .stall(stall)
-                        .build();
-
-                stall.setStatus(com.project.Bookfair_Reservation.enumtype.StallStatus.BOOKED);
-                stall.setReservedBy(user);
-                stallRepository.save(stall);
-
-                reservationStalls.add(rs);
-            }
-
-            reservation.setReservationStalls(reservationStalls);
+        reservation.setReservationStalls(reservationStalls);
 
             reservationRepository.save(reservation);
             return new ReservationResultDTO(reservation.getId(), "Reservation successful");
@@ -138,8 +137,7 @@ public class ReservationServiceImpl implements ReservationService {
         List<Reservation> reservations = reservationRepository.findAll();
         List<ReservationResultDTO> response = new ArrayList<>();
         for (Reservation r : reservations) {
-            response.add(new ReservationResultDTO(r.getId(),
-                    "User ID: " + r.getUser().getId() + "| Status: " + r.getStatus()));
+            response.add(new ReservationResultDTO(r.getId(), "User ID: " + r.getUser().getId() + "| Status: " + r.getStatus()));
         }
         return response;
     }
@@ -154,8 +152,9 @@ public class ReservationServiceImpl implements ReservationService {
 
         Long userId = userRepository.findByEmail(userEmail).get().getId();
 
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
+        Reservation reservation =
+                reservationRepository.findById(reservationId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
 
         // USER can cancel only his reservation
         if (role.equals("PUBLISHER") || role.equals("VENDOR")) {
@@ -167,15 +166,18 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setStatus(ReservationStatus.CANCELLED);
         reservationRepository.save(reservation);
 
-        // add this code
+        //add this code
         // Send cancellation email
         emailService.sendReservationCancelledEmail(
                 reservation.getUser().getEmail(),
                 reservation.getUser().getFirstName(),
-                reservation.getId().toString());
+                reservation.getId().toString()
+        );
 
         return new ReservationResultDTO(
                 reservation.getId(),
-                "Reservation cancelled successfully");
+                "Reservation cancelled successfully"
+        );
     }
 }
+
