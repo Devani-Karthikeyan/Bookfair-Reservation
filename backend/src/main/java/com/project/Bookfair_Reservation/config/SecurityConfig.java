@@ -43,13 +43,13 @@ public class SecurityConfig {
                 }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/v3/api-docs/**",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html",
-                        "/api/auth/**")
-                .permitAll()
-                .anyRequest().authenticated()
-        );
+                        .requestMatchers("/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/api/auth/**",
+                                "/api/stalls/allstalls")
+                        .permitAll()
+                        .anyRequest().authenticated());
 
         http.addFilterAfter(jwtAuthenticationFilterUtil, UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -60,4 +60,3 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 }
-

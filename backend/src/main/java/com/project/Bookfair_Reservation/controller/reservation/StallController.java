@@ -28,7 +28,7 @@ public class StallController {
 
         generalResponseDto = new GeneralResponseDto();
 
-        try{
+        try {
             generalResponseDto.setData(stallService.createStall(stall));
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setRes(true);
@@ -52,7 +52,7 @@ public class StallController {
 
         generalResponseDto = new GeneralResponseDto();
 
-        try{
+        try {
             stall.setId(stallId);
 
             generalResponseDto.setData(stallService.updateStall(stall));
@@ -78,7 +78,7 @@ public class StallController {
 
         generalResponseDto = new GeneralResponseDto();
 
-        try{
+        try {
             stallService.deleteStall(stallId);
             generalResponseDto.setData("Stall deleted successfully");
             generalResponseDto.setMsg("Succuss");
@@ -99,12 +99,11 @@ public class StallController {
 
     // Get All Stalls
     @GetMapping("/allstalls")
-    @PreAuthorize("hasAnyRole('EMPLOYEE','PUBLISHER','VENDOR')")
     public ResponseEntity<GeneralResponseDto> getAllStalls() {
 
         generalResponseDto = new GeneralResponseDto();
 
-        try{
+        try {
             generalResponseDto.setData(stallService.getAllStalls());
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(200);
@@ -129,7 +128,7 @@ public class StallController {
 
         generalResponseDto = new GeneralResponseDto();
 
-        try{
+        try {
             generalResponseDto.setData(stallService.getStallById(stallId));
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(200);
@@ -154,7 +153,7 @@ public class StallController {
 
         generalResponseDto = new GeneralResponseDto();
 
-        try{
+        try {
             generalResponseDto.setData(stallService.getAvailableStallsByHall(hallId));
             generalResponseDto.setMsg("Succuss");
             generalResponseDto.setStatusCode(200);
@@ -169,7 +168,6 @@ public class StallController {
             log.error("Error occurred in /api/stalls/available/hall/hallid={hallId}", e.getMessage());
             return ResponseEntity.status(generalResponseDto.getStatusCode()).body(generalResponseDto);
         }
-
 
     }
 }
