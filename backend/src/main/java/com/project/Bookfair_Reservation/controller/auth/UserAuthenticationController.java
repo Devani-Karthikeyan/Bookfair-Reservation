@@ -40,6 +40,8 @@ public class UserAuthenticationController {
         if (!generalResponse.isRes())
             return ResponseEntity.status(generalResponse.getStatusCode()).body(generalResponse);
 
+        generalResponse.setData(result.role());
+
         ResponseCookie accessCookie = ResponseCookie.from("ACCESS_TOKEN", accessToken)
                 .httpOnly(true)
                 .secure(true)

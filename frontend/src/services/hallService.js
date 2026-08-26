@@ -1,45 +1,31 @@
-// Mock Data
-let halls = [
-    { id: 1, name: 'Main Exhibition Hall', capacity: 500, location: 'Building A, Ground Floor', status: 'ACTIVE' },
-    { id: 2, name: 'Conference Hall B', capacity: 200, location: 'Building B, 1st Floor', status: 'ACTIVE' },
-    { id: 3, name: 'Open Air Arena', capacity: 1000, location: 'Outdoor Complex', status: 'MAINTENANCE' },
-];
+import api from '../api/axiosConfig';
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const unwrap = response => response.data.data || [];
+const mapHall = hall => ({ ...hall, name: hall.name || hall.hallName, description: hall.description || '' });
 
 export const hallService = {
     getAllHalls: async () => {
-        await delay(500);
-        return [...halls];
+        const response = await api.get('/halls/get/allhall');
+        return unwrap(response).map(mapHall);
     },
 
     getHallById: async (id) => {
-        await delay(300);
-        return halls.find(h => h.id === parseInt(id));
+        const response = await api.get(`/halls/get/hall=${id}`);
+        return mapHall(response.data.data);
     },
 
     createHall: async (hallData) => {
-        await delay(600);
-        const newHall = {
-            id: halls.length + 1,
-            ...hallData,
-            status: 'ACTIVE'
-        };
-        halls.push(newHall);
-        return newHall;
+        const response = await api.post('/halls/create', { hallName: hallData.name, description: hallData.description });
+        return mapHall(response.data.data);
     },
 
     updateHall: async (id, hallData) => {
-        await delay(500);
-        halls = halls.map(h =>
-            h.id === parseInt(id) ? { ...h, ...hallData } : h
-        );
-        return halls.find(h => h.id === parseInt(id));
+        const response = await api.put(`/halls/update/hall=${id}`, { id, hallName: hallData.name, description: hallData.description });
+        return mapHall(response.data.data);
     },
 
     deleteHall: async (id) => {
-        await delay(400);
-        halls = halls.filter(h => h.id !== parseInt(id));
+        await api.delete(`/halls/delete/hall=${id}`);
         return true;
     }
 };

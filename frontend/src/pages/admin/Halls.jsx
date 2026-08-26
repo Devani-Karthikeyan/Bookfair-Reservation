@@ -15,7 +15,7 @@ const Halls = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Form State
-    const [formData, setFormData] = useState({ name: '', capacity: '', location: '', status: 'ACTIVE' });
+    const [formData, setFormData] = useState({ name: '', description: '' });
 
     const fetchHalls = async () => {
         setLoading(true);
@@ -35,7 +35,7 @@ const Halls = () => {
 
     const handleEdit = (hall) => {
         setCurrentHall(hall);
-        setFormData({ name: hall.name, capacity: hall.capacity, location: hall.location, status: hall.status });
+        setFormData({ name: hall.name, description: hall.description || '' });
         setIsModalOpen(true);
     };
 
@@ -46,7 +46,7 @@ const Halls = () => {
 
     const handleCreate = () => {
         setCurrentHall(null);
-        setFormData({ name: '', capacity: '', location: '', status: 'ACTIVE' });
+        setFormData({ name: '', description: '' });
         setIsModalOpen(true);
     };
 
@@ -83,9 +83,7 @@ const Halls = () => {
     const columns = [
         { header: 'ID', accessor: 'id' },
         { header: 'Hall Name', accessor: 'name', render: (row) => <span className="font-semibold">{row.name}</span> },
-        { header: 'Capacity', accessor: 'capacity' },
-        { header: 'Location', accessor: 'location' },
-        { header: 'Status', accessor: 'status', render: (row) => <StatusBadge status={row.status} /> },
+        { header: 'Description', accessor: 'description' },
     ];
 
     return (
@@ -125,40 +123,14 @@ const Halls = () => {
                             required
                         />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Capacity</label>
-                            <input
-                                type="number"
-                                value={formData.capacity}
-                                onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-rose-500 focus:border-rose-500 dark:bg-gray-700 dark:text-white"
-                                placeholder="500"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
-                            <select
-                                value={formData.status}
-                                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-rose-500 focus:border-rose-500 dark:bg-gray-700 dark:text-white"
-                            >
-                                <option value="ACTIVE">Active</option>
-                                <option value="MAINTENANCE">Maintenance</option>
-                                <option value="CLOSED">Closed</option>
-                            </select>
-                        </div>
-                    </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
                         <input
                             type="text"
-                            value={formData.location}
-                            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-rose-500 focus:border-rose-500 dark:bg-gray-700 dark:text-white"
-                            placeholder="Building / Floor"
-                            required
+                            placeholder="Hall description"
                         />
                     </div>
                 </div>

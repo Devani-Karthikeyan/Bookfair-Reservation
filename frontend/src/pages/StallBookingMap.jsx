@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
 import PaymentModal from '../components/PaymentModal';
+import api from '../api/axiosConfig';
 
 const StallBookingMap = () => {
     // State Management
@@ -24,7 +24,7 @@ const StallBookingMap = () => {
     useEffect(() => {
         const fetchStalls = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/stalls/allstalls');
+                const response = await api.get('/stalls/allstalls');
                 const stallsArray = response.data.data || [];
 
                 const newHallData = {};
@@ -133,9 +133,7 @@ const StallBookingMap = () => {
             };
 
             // Post reservation
-            await axios.post('http://localhost:8080/api/reservations/create', payload, {
-                withCredentials: true
-            });
+            await api.post('/reservations/create', payload);
             alert(`Payment of ₹${totalAmount.toLocaleString()} successful! Stalls booked for ${customerDetails.name}.`);
 
             setSelectedStalls([]);

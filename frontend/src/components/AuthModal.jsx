@@ -34,10 +34,11 @@ const AuthModal = () => {
         try {
             const result = await login(loginData);
             if (result.statusCode === 200) {
-                const user = result.data || { role: 'USER' };
-                localStorage.setItem('userRole', user.role || 'USER');
+                const user = result.data || {};
+                const role = typeof user === 'string' ? user : user.roles || user.role || 'USER';
+                localStorage.setItem('userRole', role);
                 closeAuthModal();
-                navigate('/dashboard');
+                navigate(role === 'EMPLOYEE' ? '/admin/dashboard' : '/dashboard');
             } else {
                 setError(result.msg || 'Login failed');
             }

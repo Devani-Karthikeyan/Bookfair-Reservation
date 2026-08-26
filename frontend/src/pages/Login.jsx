@@ -12,10 +12,11 @@ const Login = () => {
         try {
             const result = await login({ email: formData.email, password: formData.password });
             if (result.statusCode === 200) {
-                // Use the selected role (mocking role selection for now as API might not return it)
-                const role = 'USER';
+                const role = typeof result.data === 'string'
+                    ? result.data
+                    : result.data?.roles || result.data?.role || 'USER';
                 localStorage.setItem('userRole', role);
-                navigate('/dashboard');
+                navigate(role === 'EMPLOYEE' ? '/admin/dashboard' : '/dashboard');
             } else {
                 setError(result.msg || 'Login failed');
             }

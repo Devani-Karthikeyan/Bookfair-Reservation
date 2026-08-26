@@ -1,26 +1,23 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { login } from '../api/auth';
+import { signup } from '../api/auth';
 
-const Login = () => {
-    const [formData, setFormData] = useState({ email: '', password: '' });
+const Signup = () => {
+    const [formData, setFormData] = useState({ firstName: '', lastName: '', mobileNumber: '', email: '', password: '', roles: 'PUBLISHER' });
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const result = await login({ email: formData.email, password: formData.password });
-            if (result.statusCode === 200) {
-                // Use the selected role (mocking role selection for now as API might not return it)
-                const role = 'USER';
-                localStorage.setItem('userRole', role);
-                navigate('/dashboard');
+            const result = await signup(formData);
+            if (result.statusCode === 200 || result.statusCode === 201) {
+                navigate('/login');
             } else {
-                setError(result.msg || 'Login failed');
+                setError(result.msg || 'Signup failed');
             }
         } catch (err) {
-            setError('An error occurred during login.');
+            setError('An error occurred during signup.');
         }
     };
 
@@ -34,8 +31,8 @@ const Login = () => {
 
             <div className="bg-white/10 backdrop-blur-xl p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-md border border-white/20 relative z-10 transition-all duration-300 hover:shadow-rose-900/30">
                 <div className="text-center mb-8">
-                    <h2 className="text-3xl font-bold text-white mb-2">Welcome Back</h2>
-                    <p className="text-rose-200">Sign in to continue to your dashboard</p>
+                        <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
+                        <p className="text-rose-200">Register for Bookfair Reserve</p>
                 </div>
 
                 {error && <div className="bg-red-500/10 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg relative mb-6 text-sm flex items-center gap-2" role="alert">
@@ -43,6 +40,20 @@ const Login = () => {
                 </div>}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-rose-100 mb-2 font-medium text-sm">First Name</label>
+                            <input type="text" className="w-full px-4 py-3 bg-white/5 border border-rose-800/50 text-white rounded-xl" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} required />
+                        </div>
+                        <div>
+                            <label className="block text-rose-100 mb-2 font-medium text-sm">Last Name</label>
+                            <input type="text" className="w-full px-4 py-3 bg-white/5 border border-rose-800/50 text-white rounded-xl" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-rose-100 mb-2 font-medium text-sm">Mobile Number</label>
+                        <input type="tel" className="w-full px-4 py-3 bg-white/5 border border-rose-800/50 text-white rounded-xl" value={formData.mobileNumber} onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })} required />
+                    </div>
                     <div>
                         <label className="block text-rose-100 mb-2 font-medium text-sm">Email Address</label>
                         <input
@@ -73,7 +84,7 @@ const Login = () => {
                         type="submit"
                         className="w-full bg-rose-600 text-white py-3.5 rounded-xl font-bold hover:bg-rose-500 transition-all shadow-lg shadow-rose-600/30 hover:shadow-rose-500/50 transform hover:-translate-y-0.5"
                     >
-                        Sign In
+                        Create Account
                     </button>
                 </form>
 
@@ -87,4 +98,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Signup;
