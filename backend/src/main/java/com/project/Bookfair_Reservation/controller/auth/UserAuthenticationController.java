@@ -40,48 +40,53 @@ public class UserAuthenticationController {
         if (!generalResponse.isRes())
             return ResponseEntity.status(generalResponse.getStatusCode()).body(generalResponse);
 
+        generalResponse.setData(java.util.Map.of(
+                "role", result.role() == null ? "USER" : result.role().toString(),
+                "email", result.email()
+        ));
+
         ResponseCookie accessCookie = ResponseCookie.from("ACCESS_TOKEN", accessToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .maxAge(accessTokenExpiryTime)
-                .sameSite("Lax") // or "Strict"
+                .sameSite("Lax")
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("REFRESH_TOKEN", refreshToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .maxAge(cookieExpiryTime)
-                .sameSite("Lax") // or "Strict"
+                .sameSite("Lax")
                 .build();
 
         ResponseCookie userEmailCookie = ResponseCookie.from("USER_EMAIL", result.email())
-                .httpOnly(true)
-                .secure(true)
+                .httpOnly(false)
+                .secure(false)
                 .path("/")
                 .maxAge(cookieExpiryTime)
-                .sameSite("Lax") // or "Strict"
+                .sameSite("Lax")
                 .build();
 
         ResponseCookie userRoleCookie = null;
 
         if(result.role()!=null) {
             userRoleCookie = ResponseCookie.from("USER_ROLE", result.role().toString())
-                    .httpOnly(true)
-                    .secure(true)
+                    .httpOnly(false)
+                    .secure(false)
                     .path("/")
                     .maxAge(cookieExpiryTime)
-                    .sameSite("Lax") // or "Strict"
+                    .sameSite("Lax")
                     .build();
         }
         else{
-            userRoleCookie = ResponseCookie.from("USER_ROLE", null)
-                    .httpOnly(true)
-                    .secure(true)
+            userRoleCookie = ResponseCookie.from("USER_ROLE", "USER")
+                    .httpOnly(false)
+                    .secure(false)
                     .path("/")
                     .maxAge(cookieExpiryTime)
-                    .sameSite("Lax") // or "Strict"
+                    .sameSite("Lax")
                     .build();
         }
         return ResponseEntity.status(generalResponse.getStatusCode())
