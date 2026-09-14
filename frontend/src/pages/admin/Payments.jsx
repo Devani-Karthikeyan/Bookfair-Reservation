@@ -45,9 +45,9 @@ const Payments = () => {
         setIsProcessing(true);
         try {
             if (actionType === 'REFUND') {
-                await paymentService.refundPayment(selectedPayment.id);
+                await paymentService.refundPayment(selectedPayment.reservationId || selectedPayment.id);
             } else {
-                await paymentService.updatePaymentStatus(selectedPayment.id, actionType);
+                await paymentService.updatePaymentStatus(selectedPayment.transactionId || selectedPayment.id, actionType);
             }
             setIsConfirmOpen(false);
             fetchPayments();

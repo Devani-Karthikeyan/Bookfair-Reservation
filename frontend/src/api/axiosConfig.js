@@ -1,13 +1,19 @@
 import axios from 'axios';
 
-// Create an instance, but since we are mocking APIs directly in the modules, 
-// this is mostly a placeholder or for any un-mocked calls (which shouldn't exist).
 const api = axios.create({
-    baseURL: 'http://localhost:8080/api', // DISABLED for Frontend-Only Mode
+    baseURL: 'http://localhost:8080/api',
     headers: {
         'Content-Type': 'application/json',
     },
-    // withCredentials: true // Not needed for mock mode
+    withCredentials: true,
 });
+
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const message = error?.response?.data?.msg || error?.response?.data?.message || error?.message || 'Request failed';
+        return Promise.reject(new Error(message));
+    }
+);
 
 export default api;

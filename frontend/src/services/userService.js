@@ -1,37 +1,37 @@
-// Mock Data
-let users = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'VENDOR', status: 'ACTIVE', joinedDate: '2025-01-15' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'PUBLISHER', status: 'ACTIVE', joinedDate: '2025-01-20' },
-    { id: 3, name: 'Mike Johnson', email: 'mike@example.com', role: 'VENDOR', status: 'DISABLED', joinedDate: '2025-02-01' },
-    { id: 4, name: 'Sarah Wilson', email: 'sarah@example.com', role: 'PUBLISHER', status: 'ACTIVE', joinedDate: '2025-02-10' },
-    { id: 5, name: 'Admin User', email: 'admin@bookfair.com', role: 'EMPLOYEE', status: 'ACTIVE', joinedDate: '2024-12-01' },
-];
+import api from '../api/axiosConfig';
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const unwrap = (response) => response?.data?.data ?? response?.data ?? [];
+
+const normalizeUser = (user = {}) => ({
+    id: user.id,
+    name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.name || 'Unknown User',
+    email: user.email || '',
+    role: user.roles || user.role || 'PUBLISHER',
+    status: user.active === false ? 'DISABLED' : 'ACTIVE',
+    joinedDate: user.createdAt || user.joinedDate || ''
+});
 
 export const userService = {
     getAllUsers: async () => {
-        await delay(500);
-        return [...users];
+        const response = await api.get('/admin/users/allusers');
+        const data = unwrap(response);
+        return Array.isArray(data) ? data.map(normalizeUser) : [];
     },
 
     getUserById: async (id) => {
-        await delay(300);
-        return users.find(u => u.id === parseInt(id));
+        const response = await api.get(`/admin/users/user=${id}`);
+        return normalizeUser(unwrap(response));
     },
 
     updateUserStatus: async (id, status) => {
-        await delay(500);
-        users = users.map(user =>
-            user.id === parseInt(id) ? { ...user, status } : user
-        );
-        return users.find(u => u.id === parseInt(id));
+        const endpoint = status === 'DISABLED' ? `/admin/users/disable/user=${id}` : `/admin/users/enable/user=${id}`;
+        const response = await api.put(endpoint);
+        return normalizeUser(unwrap(response));
     },
 
-    // Used for filtering on frontend for now, or could simulate backend filter
     filterUsers: async (role) => {
-        await delay(300);
-        if (!role || role === 'ALL') return [...users];
-        return users.filter(u => u.role === role);
+        const users = await userService.getAllUsers();
+        if (!role || role === 'ALL') return users;
+        return users.filter((user) => user.role === role);
     }
 };

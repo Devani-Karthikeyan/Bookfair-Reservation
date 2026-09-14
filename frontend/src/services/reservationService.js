@@ -1,45 +1,58 @@
-// Mock Data
-let reservations = [
-    { id: 501, userName: 'John Doe', stallName: 'A-02', date: '2025-02-15', status: 'CONFIRMED', type: 'VENDOR' },
-    { id: 502, userName: 'Jane Smith', stallName: 'B-01', date: '2025-02-16', status: 'PENDING', type: 'PUBLISHER' },
-    { id: 503, userName: 'Mike Johnson', stallName: 'A-05', date: '2025-02-18', status: 'CANCELLED', type: 'VENDOR' },
-];
+import api from '../api/axiosConfig';
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const unwrap = (response) => response?.data?.data ?? response?.data ?? [];
+
+const normalizeReservation = (reservation = {}) => {
+    const message = reservation.message || '';
+    const statusMatch = message.match(/Status\s*:\s*([A-Z_]+)/i);
+    const userMatch = message.match(/User\s*ID\s*:\s*(\d+)/i);
+
+    return {
+        id: reservation.id ?? reservation.reservationId ?? null,
+        reservationId: reservation.reservationId ?? reservation.id ?? null,
+        userName: reservation.userName || (userMatch ? `User ${userMatch[1]}` : 'Unknown User'),
+        stallName: reservation.stallName || 'N/A',
+        date: reservation.date || reservation.reservationDate || '',
+        status: (statusMatch ? statusMatch[1] : reservation.status || 'PENDING').toUpperCase(),
+        type: reservation.type || 'N/A',
+        message
+    };
+};
 
 export const reservationService = {
     getAllReservations: async () => {
-        await delay(600);
-        return [...reservations];
+        const response = await api.get('/reservations/allreservation');
+        const data = unwrap(response);
+        return Array.isArray(data) ? data.map(normalizeReservation) : [];
     },
 
     getReservationById: async (id) => {
-        await delay(300);
-        return reservations.find(r => r.id === parseInt(id));
+        const response = await api.get('/reservations/allreservation');
+        const data = unwrap(response);
+        const match = Array.isArray(data) ? data.find((item) => String(item.id ?? item.reservationId) === String(id)) : null;
+        return match ? normalizeReservation(match) : null;
     },
 
     createReservation: async (data) => {
-        await delay(600);
-        const newReservation = {
-            id: reservations.length + 500,
-            ...data,
-            status: 'PENDING'
+        const payload = {
+            userEmail: data.userEmail,
+            stallId: data.stallId || []
         };
-        reservations.push(newReservation);
-        return newReservation;
+        const response = await api.post('/reservations/create', payload);
+        return normalizeReservation(unwrap(response));
     },
 
     cancelReservation: async (id) => {
-        await delay(500);
-        reservations = reservations.map(r =>
-            r.id === parseInt(id) ? { ...r, status: 'CANCELLED' } : r
-        );
-        return reservations.find(r => r.id === parseInt(id));
+        const payload = {
+            reservationId: Number(id),
+            userEmail: localStorage.getItem('userEmail') || 'unknown@bookfair.com',
+            roles: localStorage.getItem('userRole') || 'PUBLISHER'
+        };
+        const response = await api.post(`/reservations/delete/reservationid=${id}`, payload);
+        return normalizeReservation(unwrap(response));
     },
 
     deleteReservation: async (id) => {
-        await delay(400);
-        reservations = reservations.filter(r => r.id !== parseInt(id));
-        return true;
+        return reservationService.cancelReservation(id);
     }
 };

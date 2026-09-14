@@ -21,7 +21,6 @@ const Navbar = () => {
             }
         };
 
-        // Simple check for login status (replace with real auth context later)
         const checkLogin = () => {
             const role = localStorage.getItem('userRole');
             setIsLoggedIn(!!role);
@@ -29,16 +28,19 @@ const Navbar = () => {
 
         checkLogin();
         window.addEventListener('scroll', handleScroll);
-        window.addEventListener('storage', checkLogin); // Listen for storage changes
+        window.addEventListener('storage', checkLogin);
+        window.addEventListener('authChange', checkLogin);
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
             window.removeEventListener('storage', checkLogin);
+            window.removeEventListener('authChange', checkLogin);
         };
     }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('userRole');
+        window.dispatchEvent(new Event('authChange'));
         setIsLoggedIn(false);
         navigate('/');
     };

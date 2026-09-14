@@ -3,13 +3,18 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/admin/Sidebar';
 import DashboardHeader from '../components/admin/DashboardHeader';
 
+const isAdminRole = (role) => {
+    const normalized = (role || '').toUpperCase().replace('ROLE_', '');
+    return ['EMPLOYEE', 'ADMIN'].includes(normalized);
+};
+
 const AdminLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         const userRole = localStorage.getItem('userRole');
-        if (userRole !== 'EMPLOYEE') {
+        if (!isAdminRole(userRole)) {
             navigate('/');
         }
     }, [navigate]);
