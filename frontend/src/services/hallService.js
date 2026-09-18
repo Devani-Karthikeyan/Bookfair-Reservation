@@ -1,45 +1,72 @@
-// Mock Data
-let halls = [
-    { id: 1, name: 'Main Exhibition Hall', capacity: 500, location: 'Building A, Ground Floor', status: 'ACTIVE' },
-    { id: 2, name: 'Conference Hall B', capacity: 200, location: 'Building B, 1st Floor', status: 'ACTIVE' },
-    { id: 3, name: 'Open Air Arena', capacity: 1000, location: 'Outdoor Complex', status: 'MAINTENANCE' },
-];
+import api from '../api/axiosConfig';
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const unwrap = (response) => response?.data?.data ?? response?.data ?? [];
+
+const parseDescription = (description = '') => {
+    const match = { location: '', capacity: '', status: '' };
+    if (!description) return match;
+
+    const locationMatch = description.match(/Location\s*:\s*([^|]+)/i);
+    const capacityMatch = description.match(/Capacity\s*:\s*(\d+)/i);
+    const statusMatch = description.match(/Status\s*:\s*([^|]+)/i);
+
+    if (locationMatch) match.location = locationMatch[1].trim();
+    if (capacityMatch) match.capacity = capacityMatch[1].trim();
+    if (statusMatch) match.status = statusMatch[1].trim().toUpperCase();
+
+    return match;
+};
+
+const normalizeHall = (hall = {}) => {
+    const descriptionMeta = parseDescription(hall.description);
+
+    return {
+        id: hall.id,
+        name: hall.hallName || hall.name || 'Unnamed Hall',
+        hallName: hall.hallName || hall.name || 'Unnamed Hall',
+        capacity: hall.capacity ?? Number(descriptionMeta.capacity || 0),
+        location: hall.location || descriptionMeta.location || '',
+        status: hall.status || descriptionMeta.status || 'ACTIVE',
+        description: hall.description || ''
+    };
+};
+
+const toPayload = (hallData = {}) => {
+    const descriptionParts = [];
+    if (hallData.location) descriptionParts.push(`Location: ${hallData.location}`);
+    if (hallData.capacity !== undefined && hallData.capacity !== '') descriptionParts.push(`Capacity: ${hallData.capacity}`);
+    if (hallData.status) descriptionParts.push(`Status: ${hallData.status}`);
+
+    return {
+        hallName: hallData.name || hallData.hallName || '',
+        description: hallData.description || descriptionParts.join(' | ')
+    };
+};
 
 export const hallService = {
     getAllHalls: async () => {
-        await delay(500);
-        return [...halls];
+        const response = await api.get('/halls/get/allhall');
+        const data = unwrap(response);
+        return Array.isArray(data) ? data.map(normalizeHall) : [];
     },
 
     getHallById: async (id) => {
-        await delay(300);
-        return halls.find(h => h.id === parseInt(id));
+        const response = await api.get(`/halls/get/hall=${id}`);
+        return normalizeHall(unwrap(response));
     },
 
     createHall: async (hallData) => {
-        await delay(600);
-        const newHall = {
-            id: halls.length + 1,
-            ...hallData,
-            status: 'ACTIVE'
-        };
-        halls.push(newHall);
-        return newHall;
+        const response = await api.post('/halls/create', toPayload(hallData));
+        return normalizeHall(unwrap(response));
     },
 
     updateHall: async (id, hallData) => {
-        await delay(500);
-        halls = halls.map(h =>
-            h.id === parseInt(id) ? { ...h, ...hallData } : h
-        );
-        return halls.find(h => h.id === parseInt(id));
+        const response = await api.put(`/halls/update/hall=${id}`, toPayload(hallData));
+        return normalizeHall(unwrap(response));
     },
 
     deleteHall: async (id) => {
-        await delay(400);
-        halls = halls.filter(h => h.id !== parseInt(id));
+        await api.delete(`/halls/delete/hall=${id}`);
         return true;
     }
 };

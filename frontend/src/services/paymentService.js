@@ -1,36 +1,45 @@
-// Mock Data
-let payments = [
-    { id: 101, user: 'John Doe', amount: 1500, date: '2025-02-15', status: 'SUCCESS', transactionId: 'TXN_123456', reservationId: 501 },
-    { id: 102, user: 'Jane Smith', amount: 3000, date: '2025-02-16', status: 'PENDING', transactionId: 'TXN_789012', reservationId: 502 },
-    { id: 103, user: 'Mike Johnson', amount: 2000, date: '2025-02-17', status: 'FAILED', transactionId: 'TXN_345678', reservationId: 503 },
-];
+import api from '../api/axiosConfig';
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const unwrap = (response) => response?.data?.data ?? response?.data ?? [];
+
+const normalizePayment = (payment = {}) => ({
+    id: payment.transactionId || payment.reservationId || payment.id,
+    user: payment.user || payment.userName || 'Unknown User',
+    amount: Number(payment.amount ?? 0),
+    date: payment.date || payment.paymentDate || '',
+    status: (payment.status || payment.paymentStatus || 'PENDING').toUpperCase(),
+    transactionId: payment.transactionId || payment.id || '',
+    reservationId: payment.reservationId ?? payment.reservation?.id ?? null,
+    message: payment.message || ''
+});
 
 export const paymentService = {
     getAllPayments: async () => {
-        await delay(600);
-        return [...payments];
+        const response = await api.get('/admin/payments/allpayments');
+        const data = unwrap(response);
+        return Array.isArray(data) ? data.map(normalizePayment) : [];
     },
 
     getPaymentById: async (id) => {
-        await delay(300);
-        return payments.find(p => p.id === parseInt(id));
+        const response = await api.get(`/admin/payments/payemntid=${id}`);
+        return normalizePayment(unwrap(response));
     },
 
     updatePaymentStatus: async (id, status) => {
-        await delay(500);
-        payments = payments.map(p =>
-            p.id === parseInt(id) ? { ...p, status } : p
-        );
-        return payments.find(p => p.id === parseInt(id));
+        const normalizedStatus = String(status).toUpperCase();
+        const endpoint = normalizedStatus === 'SUCCESS'
+            ? `/payments/success/paymentid=${id}`
+            : normalizedStatus === 'FAILED'
+                ? `/payments/fail/paymentid=${id}`
+                : `/admin/payments/status=${normalizedStatus}`;
+
+        const response = await api.post(endpoint);
+        return normalizePayment(unwrap(response));
     },
 
     refundPayment: async (id) => {
-        await delay(800);
-        payments = payments.map(p =>
-            p.id === parseInt(id) ? { ...p, status: 'REFUNDED' } : p
-        );
-        return payments.find(p => p.id === parseInt(id));
+        const reservationId = Number(id);
+        const response = await api.post(`/payments/refund/reservationid=${reservationId}`);
+        return normalizePayment(unwrap(response));
     }
 };

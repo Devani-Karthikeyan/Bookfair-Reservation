@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Book, Users, Globe, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import EventCarousel from '../components/EventCarousel';
-import { events } from '../data/events';
 import { useAuthModal } from '../context/AuthModalContext';
 
 const slides = [
@@ -48,9 +47,13 @@ const Home = () => {
     const prevSlide = () => setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
 
     const [activeCategory, setActiveCategory] = useState("All");
+    const [events, setEvents] = useState([]);
     const categories = ["All", "Fairs", "Literary", "Workshops", "Tech"];
 
-    // Import events from data file
+    useEffect(() => {
+        setEvents([]);
+    }, []);
+
     const filteredEvents = activeCategory === "All"
         ? events
         : events.filter(e => e.category === activeCategory);

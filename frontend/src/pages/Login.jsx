@@ -2,6 +2,11 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../api/auth';
 
+const isAdminRole = (role) => {
+    const normalized = (role || '').toUpperCase().replace('ROLE_', '');
+    return ['EMPLOYEE', 'ADMIN'].includes(normalized);
+};
+
 const Login = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
@@ -12,10 +17,18 @@ const Login = () => {
         try {
             const result = await login({ email: formData.email, password: formData.password });
             if (result.statusCode === 200) {
-                // Use the selected role (mocking role selection for now as API might not return it)
-                const role = 'USER';
-                localStorage.setItem('userRole', role);
-                navigate('/dashboard');
+                const rawRole = result.role || result.data?.role || result.data?.roles || result.data?.data?.role || 'USER';
+                const role = Array.isArray(rawRole) ? rawRole[0] : String(rawRole).toUpperCase();
+                const normalizedRole = role.replace('ROLE_', '');
+
+                localStorage.setItem('userRole', normalizedRole);
+                window.dispatchEvent(new Event('authChange'));
+
+                if (isAdminRole(normalizedRole)) {
+                    navigate('/admin/dashboard');
+                } else {
+                    navigate('/dashboard');
+                }
             } else {
                 setError(result.msg || 'Login failed');
             }
@@ -81,17 +94,6 @@ const Login = () => {
                     <p className="text-rose-200">
                         Don't have an account? <Link to="/signup" className="text-white hover:text-rose-300 font-bold transition-colors ml-1 underline decoration-rose-500/50 hover:decoration-white">Sign Up</Link>
                     </p>
-
-                    {/* Temporary Dev Helper */}
-                    <button
-                        onClick={() => {
-                            localStorage.setItem('userRole', 'EMPLOYEE');
-                            navigate('/admin/dashboard');
-                        }}
-                        className="mt-4 text-xs text-gray-400 hover:text-white bg-gray-800/50 px-3 py-1 rounded"
-                    >
-                        [DEV] Quick Admin Login
-                    </button>
                 </div>
             </div>
         </div>

@@ -4,6 +4,11 @@ import { useAuthModal } from '../context/AuthModalContext';
 import { login, signup } from '../api/auth';
 import { useNavigate } from 'react-router-dom';
 
+const isAdminRole = (role) => {
+    const normalized = (role || '').toUpperCase().replace('ROLE_', '');
+    return ['EMPLOYEE', 'ADMIN'].includes(normalized);
+};
+
 const AuthModal = () => {
     const { isOpen, mode, setMode, closeAuthModal } = useAuthModal();
     const navigate = useNavigate();
@@ -34,10 +39,19 @@ const AuthModal = () => {
         try {
             const result = await login(loginData);
             if (result.statusCode === 200) {
-                const user = result.data || { role: 'USER' };
-                localStorage.setItem('userRole', user.role || 'USER');
+                const rawRole = result.role || result.data?.role || result.data?.roles || result.data?.data?.role || 'USER';
+                const role = Array.isArray(rawRole) ? rawRole[0] : String(rawRole).toUpperCase();
+                const normalizedRole = role.replace('ROLE_', '');
+
+                localStorage.setItem('userRole', normalizedRole);
+                window.dispatchEvent(new Event('authChange'));
                 closeAuthModal();
-                navigate('/dashboard');
+
+                if (isAdminRole(normalizedRole)) {
+                    navigate('/admin/dashboard');
+                } else {
+                    navigate('/dashboard');
+                }
             } else {
                 setError(result.msg || 'Login failed');
             }

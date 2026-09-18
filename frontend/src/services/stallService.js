@@ -1,51 +1,80 @@
-// Mock Data
-let stalls = [
-    { id: 1, name: 'A-01', hallId: 1, hallName: 'Main Exhibition Hall', size: '10x10', price: 5000, status: 'AVAILABLE' },
-    { id: 2, name: 'A-02', hallId: 1, hallName: 'Main Exhibition Hall', size: '10x10', price: 5000, status: 'BOOKED' },
-    { id: 3, name: 'B-01', hallId: 2, hallName: 'Conference Hall B', size: '15x15', price: 8000, status: 'AVAILABLE' },
-    { id: 4, name: 'B-02', hallId: 2, hallName: 'Conference Hall B', size: '15x15', price: 8000, status: 'MAINTENANCE' },
-];
+import api from '../api/axiosConfig';
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const unwrap = (response) => response?.data?.data ?? response?.data ?? [];
+
+const normalizeStatus = (status = '') => {
+    const value = String(status).toUpperCase();
+    if (value === 'MAINTENANCE') return 'BOOKED';
+    return value;
+};
+
+const normalizeSize = (size = '') => {
+    const value = String(size).toUpperCase();
+    if (value === '10X10' || value === '15X15') return 'MEDIUM';
+    if (value === 'LARGE') return 'LARGE';
+    return value || 'SMALL';
+};
+
+const normalizeStall = (stall = {}) => ({
+    id: stall.id,
+    name: stall.stallName || stall.name,
+    hallId: stall.hall?.id ?? stall.hallId ?? '',
+    hallName: stall.hall?.hallName || stall.hallName || '',
+    size: stall.size || 'SMALL',
+    price: Number(stall.price ?? 0),
+    status: normalizeStatus(stall.status),
+    description: stall.description || '',
+    reservedBy: stall.reservedBy || null
+});
+
+const toPayload = (stallData = {}) => {
+    const hallId = stallData.hallId ? Number(stallData.hallId) : null;
+    const payload = {
+        stallName: stallData.name || stallData.stallName || '',
+        size: normalizeSize(stallData.size),
+        status: normalizeStatus(stallData.status || 'AVAILABLE'),
+        price: Number(stallData.price ?? 0),
+        description: stallData.description || '',
+    };
+
+    if (hallId) {
+        payload.hall = { id: hallId };
+    }
+
+    return payload;
+};
 
 export const stallService = {
     getAllStalls: async () => {
-        await delay(500);
-        return [...stalls];
+        const response = await api.get('/stalls/allstalls');
+        const data = unwrap(response);
+        return Array.isArray(data) ? data.map(normalizeStall) : [];
     },
 
     getStallsByHall: async (hallId) => {
-        await delay(300);
-        return stalls.filter(s => s.hallId === parseInt(hallId));
+        const response = await api.get(`/stalls/available/hall/hallid=${hallId}`);
+        const data = unwrap(response);
+        return Array.isArray(data) ? data.map(normalizeStall) : [];
     },
 
     createStall: async (stallData) => {
-        await delay(600);
-        const newStall = {
-            id: stalls.length + 1,
-            ...stallData,
-            status: 'AVAILABLE'
-        };
-        stalls.push(newStall);
-        return newStall;
+        const response = await api.post('/stalls/create', toPayload(stallData));
+        return normalizeStall(unwrap(response));
     },
 
     updateStall: async (id, stallData) => {
-        await delay(500);
-        stalls = stalls.map(s =>
-            s.id === parseInt(id) ? { ...s, ...stallData } : s
-        );
-        return stalls.find(s => s.id === parseInt(id));
+        const response = await api.put(`/stalls/update/stallid=${id}`, toPayload(stallData));
+        return normalizeStall(unwrap(response));
     },
 
     deleteStall: async (id) => {
-        await delay(400);
-        stalls = stalls.filter(s => s.id !== parseInt(id));
+        await api.delete(`/stalls/delete/stallid=${id}`);
         return true;
     },
 
     getAvailableStalls: async () => {
-        await delay(300);
-        return stalls.filter(s => s.status === 'AVAILABLE');
+        const response = await api.get('/stalls/allstalls');
+        const data = unwrap(response);
+        return Array.isArray(data) ? data.filter((stall) => normalizeStatus(stall.status) === 'AVAILABLE').map(normalizeStall) : [];
     }
 };

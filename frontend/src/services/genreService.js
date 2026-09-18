@@ -1,45 +1,45 @@
-// Mock Data
-let genres = [
-    { id: 1, name: 'Fiction', description: 'Novels and short stories' },
-    { id: 2, name: 'Non-Fiction', description: 'Educational and factual books' },
-    { id: 3, name: 'Science & Tech', description: 'Technical and scientific publications' },
-    { id: 4, name: 'Children', description: 'Books for kids' },
-];
+import api from '../api/axiosConfig';
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const unwrap = (response) => response?.data?.data ?? response?.data ?? [];
+
+const normalizeGenre = (genre = {}) => ({
+    id: genre.id,
+    name: genre.name,
+    description: genre.description || ''
+});
 
 export const genreService = {
     getAllGenres: async () => {
-        await delay(400);
-        return [...genres];
+        const response = await api.get('/genres/allgenres');
+        const data = unwrap(response);
+        return Array.isArray(data) ? data.map(normalizeGenre) : [];
     },
 
     getGenreById: async (id) => {
-        await delay(200);
-        return genres.find(g => g.id === parseInt(id));
+        const response = await api.get(`/genres/get/genre=${id}`);
+        return normalizeGenre(unwrap(response));
     },
 
     createGenre: async (genreData) => {
-        await delay(500);
-        const newGenre = {
-            id: genres.length + 1,
-            ...genreData
+        const payload = {
+            name: genreData.name,
+            description: genreData.description || ''
         };
-        genres.push(newGenre);
-        return newGenre;
+        const response = await api.post('/genres/add/genre', payload);
+        return normalizeGenre(unwrap(response));
     },
 
     updateGenre: async (id, genreData) => {
-        await delay(400);
-        genres = genres.map(g =>
-            g.id === parseInt(id) ? { ...g, ...genreData } : g
-        );
-        return genres.find(g => g.id === parseInt(id));
+        const payload = {
+            name: genreData.name,
+            description: genreData.description || ''
+        };
+        const response = await api.put(`/genres/update=${id}`, payload);
+        return normalizeGenre(unwrap(response));
     },
 
     deleteGenre: async (id) => {
-        await delay(300);
-        genres = genres.filter(g => g.id !== parseInt(id));
+        await api.delete(`/genres/delete/genre=${id}`);
         return true;
     }
 };
